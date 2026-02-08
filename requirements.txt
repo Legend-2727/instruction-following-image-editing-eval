@@ -1,0 +1,29 @@
+# Checkpoint 1 — Instruction-Following Evaluation Pipeline
+# Core
+torch>=2.0
+torchvision>=0.15
+numpy>=1.24
+Pillow>=9.0
+tqdm>=4.60
+
+# HuggingFace datasets (streaming)
+datasets>=2.14
+huggingface_hub>=0.16
+
+# CLIP embeddings
+open_clip_torch>=2.20
+
+# ML / evaluation
+scikit-learn>=1.3
+joblib>=1.3
+
+# Data & viz
+pandas>=2.0
+matplotlib>=3.7
+seaborn>=0.12
+
+# Labeling tool
+streamlit>=1.28
+
+# Misc
+requests>=2.28

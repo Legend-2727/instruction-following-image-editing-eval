@@ -1,0 +1,7 @@
+id,lang,prompt
+sample_001,en,"Add a red hat to the person"
+sample_001,bn,"ব্যক্তির মাথায় একটি লাল টুপি যোগ করুন"
+sample_002,en,"Change the background to a sunset"
+sample_002,bn,"পটভূমি সূর্যাস্তে পরিবর্তন করুন"
+sample_003,en,"Remove the car on the left side"
+sample_003,bn,"বাম দিকের গাড়িটি সরান"

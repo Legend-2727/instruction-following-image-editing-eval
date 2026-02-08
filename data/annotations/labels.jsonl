@@ -1,0 +1,20 @@
+{"id": "85160_3", "adherence": "No", "error_types": ["Wrong Object"], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.941312", "notes": ""}
+{"id": "124157_1", "adherence": "No", "error_types": ["Wrong Attribute", "Ambiguous Prompt"], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.941967", "notes": ""}
+{"id": "82041_1", "adherence": "Success", "error_types": [], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.941984", "notes": ""}
+{"id": "82041_2", "adherence": "No", "error_types": ["Artifact / Quality Issue"], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942006", "notes": ""}
+{"id": "82041_3", "adherence": "Success", "error_types": [], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942017", "notes": ""}
+{"id": "15839_1", "adherence": "No", "error_types": ["Wrong Object", "Ambiguous Prompt"], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942030", "notes": ""}
+{"id": "514055_1", "adherence": "Success", "error_types": [], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942039", "notes": ""}
+{"id": "514055_2", "adherence": "Success", "error_types": [], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942047", "notes": ""}
+{"id": "357424_1", "adherence": "Success", "error_types": [], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942054", "notes": ""}
+{"id": "357424_2", "adherence": "No", "error_types": ["Wrong Object", "Artifact / Quality Issue", "Wrong Attribute"], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942067", "notes": ""}
+{"id": "357424_3", "adherence": "No", "error_types": ["Artifact / Quality Issue", "Over-editing", "Wrong Attribute"], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942079", "notes": ""}
+{"id": "161386_1", "adherence": "Partial", "error_types": ["Spatial Error", "Wrong Object", "Extra Object"], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942091", "notes": ""}
+{"id": "104326_1", "adherence": "No", "error_types": ["Style Mismatch", "Spatial Error"], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942102", "notes": ""}
+{"id": "65905_1", "adherence": "Success", "error_types": [], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942111", "notes": ""}
+{"id": "65905_2", "adherence": "Success", "error_types": [], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942119", "notes": ""}
+{"id": "65905_3", "adherence": "Partial", "error_types": ["Missing Object"], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942130", "notes": ""}
+{"id": "334328_1", "adherence": "Partial", "error_types": ["Style Mismatch"], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942139", "notes": ""}
+{"id": "294080_1", "adherence": "Partial", "error_types": ["Spatial Error", "Wrong Object", "Under-editing"], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942150", "notes": ""}
+{"id": "294080_2", "adherence": "No", "error_types": ["Over-editing"], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942161", "notes": ""}
+{"id": "540097_1", "adherence": "Success", "error_types": [], "annotator_name": "test_bot", "timestamp": "2026-02-08T14:25:05.942169", "notes": ""}
