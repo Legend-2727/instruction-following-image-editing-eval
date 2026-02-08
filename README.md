@@ -556,9 +556,7 @@ We use the [MagicBrush dataset](https://huggingface.co/datasets/osunlp/MagicBrus
 ## Contact
 
 For questions, issues, or collaboration inquiries:
-- **Email:** your.email@domain.com
-- **Issues:** [GitHub Issues](https://github.com/yourusername/image-edit-eval/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/yourusername/image-edit-eval/discussions)
+- **Email:** alaminfarhad27@gmail.com
 
 ---
 
