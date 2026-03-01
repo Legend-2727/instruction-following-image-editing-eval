@@ -87,3 +87,62 @@ class LabelRecord:
             if e in ERROR_TO_IDX:
                 vec[ERROR_TO_IDX[e]] = 1
         return vec
+
+
+# ── VLM Judgment (Checkpoint 2) ──────────────────────────────────────────────
+@dataclass
+class VLMJudgment:
+    """One row in ``vlm_judgments.jsonl`` — produced by the VLM-as-judge."""
+    id: str
+    adherence: str                          # one of ADHERENCE_LABELS
+    error_types: List[str] = field(default_factory=list)
+    reasoning: str = ""                     # VLM's natural-language explanation
+    confidence: float = 0.0                 # 0-1 self-reported confidence
+    raw_response: str = ""                  # full VLM output (for debugging)
+    model_name: str = ""                    # e.g. "Qwen2.5-VL-7B-Instruct-AWQ"
+    timestamp: str = ""
+
+    def __post_init__(self):
+        if not self.timestamp:
+            self.timestamp = datetime.utcnow().isoformat()
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "VLMJudgment":
+        return cls(**{k: v for k, v in d.items() if k in cls.__dataclass_fields__})
+
+    def adherence_idx(self) -> int:
+        return ADHERENCE_TO_IDX.get(self.adherence, -1)
+
+    def error_vector(self) -> List[int]:
+        vec = [0] * NUM_ERROR_TYPES
+        for e in self.error_types:
+            if e in ERROR_TO_IDX:
+                vec[ERROR_TO_IDX[e]] = 1
+        return vec
+
+
+@dataclass
+class HumanReview:
+    """One row in ``human_reviews.jsonl`` — human spot-check of a VLM judgment."""
+    id: str
+    vlm_adherence_correct: bool             # did VLM get adherence right?
+    vlm_errors_correct: bool                # did VLM get error types right?
+    human_adherence: str = ""               # human's corrected adherence
+    human_error_types: List[str] = field(default_factory=list)
+    notes: str = ""
+    reviewer: str = "reviewer1"
+    timestamp: str = ""
+
+    def __post_init__(self):
+        if not self.timestamp:
+            self.timestamp = datetime.utcnow().isoformat()
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "HumanReview":
+        return cls(**{k: v for k, v in d.items() if k in cls.__dataclass_fields__})

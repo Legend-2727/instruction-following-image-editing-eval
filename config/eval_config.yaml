@@ -1,0 +1,44 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# Checkpoint 2 — Evaluation pipeline configuration
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── Paths ─────────────────────────────────────────────────────────────────────
+paths:
+  data_dir: data/eval            # root for evaluation data
+  sample_dir: data/sample        # Checkpoint 1 sample data (for reference)
+  judgments_file: data/eval/vlm_judgments.jsonl
+  human_review_file: data/eval/human_reviews.jsonl
+  analysis_dir: runs/eval_analysis
+
+# ── Dataset ───────────────────────────────────────────────────────────────────
+dataset:
+  name: osunlp/MagicBrush
+  split: train
+  n_samples: 500               # default number of samples to evaluate
+  max_side: 512                # resize images to this max dimension
+  seed: 42
+
+# ── Editor model (InstructPix2Pix) ───────────────────────────────────────────
+editor:
+  model_id: timbrooks/instruct-pix2pix
+  torch_dtype: float16
+  guidance_scale: 7.5          # text guidance (higher = follow prompt more)
+  image_guidance_scale: 1.5    # image fidelity (higher = stay closer to input)
+  num_inference_steps: 20      # 20 is fast; 50 for higher quality
+  batch_size: 1                # generate one image at a time
+
+# ── VLM judge (Qwen2.5-VL) ──────────────────────────────────────────────────
+vlm:
+  # Pick ONE model_id based on your GPU:
+  #   RTX 3060 (12GB): Qwen/Qwen2.5-VL-3B-Instruct  (no quantization needed)
+  #   RTX 4090 (24GB): Qwen/Qwen2.5-VL-7B-Instruct  (or AWQ variant on Linux)
+  model_id: Qwen/Qwen2.5-VL-3B-Instruct
+  torch_dtype: auto
+  max_new_tokens: 512
+  min_pixels: 200704           # 256 * 28 * 28
+  max_pixels: 1003520          # 1280 * 28 * 28
+
+# ── Human verification ───────────────────────────────────────────────────────
+human_review:
+  samples_to_review: 50        # how many VLM judgments to spot-check
+  streamlit_port: 8502         # different port from Checkpoint 1 label tool

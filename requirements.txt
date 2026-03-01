@@ -1,29 +1,38 @@
-# Checkpoint 1 — Instruction-Following Evaluation Pipeline
-# Core
+# ── Core ──────────────────────────────────────────────────────────────────────
 torch>=2.0
 torchvision>=0.15
 numpy>=1.24
 Pillow>=9.0
 tqdm>=4.60
 
-# HuggingFace datasets (streaming)
+# ── HuggingFace ecosystem ────────────────────────────────────────────────────
 datasets>=2.14
 huggingface_hub>=0.16
+transformers>=4.45.0
+accelerate>=0.26
 
-# CLIP embeddings
+# ── CLIP embeddings (Checkpoint 1) ───────────────────────────────────────────
 open_clip_torch>=2.20
 
-# ML / evaluation
+# ── Image editing model (Checkpoint 2) ───────────────────────────────────────
+diffusers>=0.25.0
+
+# ── VLM-as-judge (Checkpoint 2) ──────────────────────────────────────────────
+qwen-vl-utils>=0.0.8
+# autoawq>=0.2.0  # Linux-only (triton dependency); use full-precision 3B model on Windows
+
+# ── ML / evaluation ─────────────────────────────────────────────────────────
 scikit-learn>=1.3
 joblib>=1.3
 
-# Data & viz
+# ── Data & viz ───────────────────────────────────────────────────────────────
 pandas>=2.0
 matplotlib>=3.7
 seaborn>=0.12
+pyyaml>=6.0
 
-# Labeling tool
+# ── Web UI ───────────────────────────────────────────────────────────────────
 streamlit>=1.28
 
-# Misc
+# ── Misc ─────────────────────────────────────────────────────────────────────
 requests>=2.28
