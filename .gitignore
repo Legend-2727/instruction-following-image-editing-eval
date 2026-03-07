@@ -15,8 +15,18 @@ Thumbs.db
 
 # Data artifacts
 /data/sample/
+/data/magicbrush/
 /data/annotations/labels.jsonl
 /runs/
+
+# Logs
+/logs/
+
+# Model weights (too large for git)
+*.pt
+*.pth
+*.bin
+*.safetensors
 
 # Notebooks
 .ipynb_checkpoints/

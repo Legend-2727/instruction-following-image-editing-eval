@@ -1,526 +1,379 @@
-# Instruction-Following Evaluation for Text-Guided Image Editing
+# Multilingual Instruction-Following Image Editing Error Classifier
 
-**A complete ML pipeline for evaluating how badly open-source image editing models follow natural language instructions.**
+**A multimodal ML/DL pipeline for classifying errors in text-guided image editing across low-resource languages (Nepali, Bangla, Hindi).**
 
-This project measures instruction-following failures in text-guided image editing. We use **InstructPix2Pix** (SOTA open-source editor) to generate edits from MagicBrush prompts, then **Qwen2.5-VL** (vision-language model) as an automated judge to classify adherence and error types — replacing slow human labeling. A human verification stage spot-checks the VLM's accuracy.
+Given a triplet of **(source image, edit instruction, edited image)**, the model predicts which of 11 error categories apply — working across English and three low-resource South Asian languages.
 
-Each sample is a triplet **(original image, edit instruction, model-edited image)** evaluated against an 11-category error taxonomy.
-
-**Status:** 🔄 **Checkpoint 2 in progress** — pipeline code complete, testing on RTX 3060 (Mar 1, 2026)
+**Status:** ✅ **Checkpoint 3 complete** — Full pipeline trained and benchmarked on RTX 5090 (Mar 7, 2026)
 
 ---
 
-## Overview
+## Key Results
 
-### Checkpoint 2 Pipeline (Current)
+### Cross-Lingual Error Classification (Test Set, n=380)
 
-```
-┌─────────────────┐
-│  MagicBrush     │  ──(stream 500 samples)──>  ┌────────────────────────────┐
-│  Dataset (HF)   │                             │  Original images + prompts │
-└─────────────────┘                             └────────────┬───────────────┘
-                                                             │
-                                                             ▼
-                                              ┌──────────────────────────────┐
-                                              │  InstructPix2Pix (SD 1.5)   │
-                                              │  SOTA open-source editor     │
-                                              │  ~6 GB VRAM, fp16            │
-                                              └──────────────┬───────────────┘
-                                                             │
-                                                             ▼
-                    ┌──────────────────────────────────────────────────────────┐
-                    │  data/eval/                                              │
-                    │    ├── images/orig/           (original from MagicBrush) │
-                    │    ├── images/model_edited/   (IP2P generated edits)     │
-                    │    ├── images/ground_truth/   (MagicBrush GT edits)      │
-                    │    └── metadata.jsonl                                    │
-                    └──────────────────────────────┬───────────────────────────┘
-                                                   │
-                                                   ▼
-                                    ┌──────────────────────────────┐
-                                    │  Qwen2.5-VL-3B (VLM Judge)  │
-                                    │  Sees: orig + edited + prompt│
-                                    │  Outputs: structured JSON    │
-                                    │  ~7 GB VRAM, full precision  │
-                                    └──────────────┬───────────────┘
-                                                   │
-                              ┌─────────────────────┴──────────────────────┐
-                              │                                            │
-                              ▼                                            ▼
-                   ┌─────────────────────┐              ┌──────────────────────────┐
-                   │  vlm_judgments.jsonl │              │  Human Verification UI   │
-                   │  (automated labels) │              │  (Streamlit spot-check)  │
-                   │  adherence + errors │              │  Validates VLM accuracy  │
-                   │  + reasoning        │              └────────┬─────────────────┘
-                   └─────────┬───────────┘                       │
-                             │                                   ▼
-                             │                        human_reviews.jsonl
-                             │                                   │
-                             └────────────────┬──────────────────┘
-                                              │
-                                              ▼
-                              ┌──────────────────────────────┐
-                              │  Analysis & Visualization    │
-                              │  • Adherence pie chart       │
-                              │  • Error frequency bar chart │
-                              │  • Correlation heatmap       │
-                              │  • Failure gallery           │
-                              │  • VLM confidence histogram  │
-                              │  • summary.json              │
-                              └──────────────────────────────┘
-```
+| Language | Macro-F1 | Weighted-F1 | Exact Match | Hamming Loss | XL Gap |
+|----------|----------|-------------|-------------|--------------|--------|
+| English  | 0.1901   | 0.3399      | 0.2526      | 0.1160       | —      |
+| Nepali   | 0.1395   | 0.2764      | 0.2053      | 0.1261       | 0.0635 |
+| Bangla   | 0.1600   | 0.2938      | 0.2447      | 0.1215       | 0.0461 |
+| Hindi    | 0.1719   | 0.3099      | 0.2474      | 0.1194       | 0.0300 |
 
-### Checkpoint 1 Pipeline (Complete)
+**Key insight:** Hindi shows the smallest cross-lingual gap (0.03), consistent with XLM-RoBERTa's stronger pre-training coverage. Nepali has the largest gap (0.06).
+
+### Per-Class F1 Scores
+
+| Error Type               | English | Nepali | Bangla | Hindi  |
+|--------------------------|---------|--------|--------|--------|
+| Wrong Object             | 0.1852  | 0.1961 | 0.2414 | 0.1538 |
+| Missing Object           | 0.0606  | 0.0000 | 0.0000 | 0.0606 |
+| Extra Object             | 0.0000  | 0.0000 | 0.0000 | 0.0000 |
+| Wrong Attribute          | 0.1463  | 0.1429 | 0.1034 | 0.1653 |
+| Spatial Error            | 0.0000  | 0.0000 | 0.0000 | 0.0417 |
+| Style Mismatch           | 0.0000  | 0.0000 | 0.0000 | 0.0000 |
+| Over-editing             | 0.2245  | 0.2000 | 0.1263 | 0.1584 |
+| Under-editing            | 0.5506  | 0.4408 | 0.4962 | 0.5020 |
+| Artifact / Quality Issue | 0.0000  | 0.1333 | 0.3077 | 0.2857 |
+| Ambiguous Prompt         | 0.3333  | 0.0000 | 0.0000 | 0.0000 |
+| Failed Removal           | 0.5909  | 0.4211 | 0.4848 | 0.5238 |
+
+### Image Quality Metrics
+
+- **CLIP-I Similarity:** 0.9063 ± 0.0883
+- **SSIM:** 0.8723 ± 0.1369 (median: 0.9210)
+
+---
+
+## Architecture
 
 ```
-┌─────────────────┐
-│  MagicBrush     │  ──(stream)──>  ┌────────────────────┐
-│  Dataset (HF)   │                 │ Dataset Sampler    │
-└─────────────────┘                 │ (20-200 triplets)  │
-                                    └──────────┬─────────┘
-                                               │
-                                               ▼
-                    ┌──────────────────────────────────────────┐
-                    │  data/sample/                            │
-                    │    ├── images/orig/  (resized to 512px)  │
-                    │    ├── images/edited/                    │
-                    │    ├── metadata.jsonl                    │
-                    │    └── translations.csv (cross-lingual)  │
-                    └──────────────────────────────────────────┘
-                                               │
-                      ┌────────────────────────┼─────────────────────────┐
-                      │                        │                         │
-                      ▼                        ▼                         ▼
-           ┌──────────────────┐   ┌──────────────────┐   ┌─────────────────────┐
-           │  Labeling Tool   │   │  CLIP Embedder   │   │  Prompt Features    │
-           │  (Streamlit UI)  │   │  (ViT-B-32)      │   │  Extractor          │
-           └────────┬─────────┘   └────────┬─────────┘   └──────────┬──────────┘
-                    │                      │                         │
-                    ▼                      ▼                         │
-         data/annotations/      data/sample/embeddings.npz           │
-         labels.jsonl           (512-d × 3 per sample)               │
-                    │                      │                         │
-                    └──────────────────────┴─────────────────────────┘
-                                           │
-                                           ▼
-                            ┌──────────────────────────────┐
-                            │  Baseline Trainer            │
-                            │  Logistic Regression Heads   │
-                            │  (Adherence + Error Types)   │
-                            └─────────────┬────────────────┘
-                                          │
-                    ┌─────────────────────┴─────────────────────┐
-                    │                                           │
-                    ▼                                           ▼
-         ┌──────────────────────┐               ┌──────────────────────────┐
-         │  Trained Models      │               │  Failure Analyzer        │
-         │  ├── adherence.pkl   │               │  (Correlation Analysis)  │
-         │  ├── error.pkl       │               └────────┬─────────────────┘
-         │  ├── metrics.json    │                        │
-         │  └── confusion.png   │                        ▼
-         └──────────────────────┘          runs/baseline/analysis/
-                                           ├── correlations.csv
-                                           ├── heatmap.png
-                                           ├── error_frequency.png
-                                           ├── wordcount_box.png
-                                           └── adherence_pie.png
+┌──────────────┐    ┌──────────────┐    ┌──────────────────────────┐
+│ Source Image  │    │ Target Image │    │ Edit Instruction         │
+│              │    │              │    │ (en / ne / bn / hi)      │
+└──────┬───────┘    └──────┬───────┘    └────────────┬─────────────┘
+       │                   │                         │
+       ▼                   ▼                         ▼
+ ┌─────────────────────────────────┐    ┌─────────────────────────┐
+ │   CLIP ViT-B/32 (frozen)       │    │  XLM-RoBERTa-base       │
+ │   Dual image encoding          │    │  Last 2 layers unfrozen │
+ │   src_feat, tgt_feat           │    │  Multilingual text enc.  │
+ └───────┬───────────────┬────────┘    └────────────┬─────────────┘
+         │               │                          │
+         ▼               ▼                          │
+ ┌───────────────────────────────┐                  │
+ │  DualImageCrossAttention      │                  │
+ │  attn(tgt, src, src)          │                  │
+ │  + diff_feat (tgt - src)      │                  │
+ │  → concat [src, cross, diff]  │                  │
+ └───────────────┬───────────────┘                  │
+                 │                                  │
+                 ▼                                  ▼
+         ┌──────────────────────────────────────────────┐
+         │  ImageTextFusion (cross-attention)            │
+         │  img_proj(1536-d) × text_proj(768-d) → 512-d │
+         └──────────────────────┬───────────────────────┘
+                                │
+                                ▼
+                   ┌────────────────────────┐
+                   │  MLP Classifier        │
+                   │  512 → 512 → 11        │
+                   │  (GELU + Dropout 0.3)  │
+                   └────────────┬───────────┘
+                                │
+                                ▼
+                  11-dim multi-label output
+                  (binary error classification)
+```
+
+**Model stats:** 369M total params, 18.3M trainable (5.0%) — vision frozen, text partially unfrozen.
+
+---
+
+## Pipeline Overview
+
+### Checkpoint 3 Pipeline (Current — executed)
+
+| Step | Script | Description | Status |
+|------|--------|-------------|--------|
+| 1 | `step1_load_dataset.py` | Stream 1,900 MagicBrush samples with retry logic | ✅ Done |
+| 2 | `step2_translate.py` | Translate instructions to ne/bn/hi using NLLB-200-1.3B | ✅ Done |
+| 3 | `step3_heuristic_judge.py` | Heuristic annotation (SSIM + pixel diff + keywords) | ✅ Done |
+| 3' | `step3_vlm_judge.py` | VLM annotation with Qwen2.5-VL (optional upgrade) | ⏸️ Blocked by HF rate limits |
+| 4 | `step4_human_review.py` | Gradio UI for human verification | ⏸️ Optional |
+| 5 | `step5_train_classifier.py` | Train CLIP+XLM-R classifier with FocalLoss | ✅ Done |
+| 6 | `step6_benchmark.py` | Cross-lingual benchmark + CLIP-I + SSIM | ✅ Done |
+
+### Data Flow
+
+```
+MagicBrush (HF) ──stream──> 1,900 samples (965 unique images)
+       │
+       ▼
+NLLB-200-1.3B ──translate──> en + ne + bn + hi instructions
+       │
+       ▼
+Heuristic Judge ──annotate──> 11-class multi-label vectors
+       │
+       ▼
+Train/Val/Test split (1330/190/380)
+       │
+       ▼
+CLIP + XLM-R Classifier ──train 20 epochs──> best_model.pt
+       │
+       ▼
+Cross-lingual Benchmark ──eval 4 languages──> BENCHMARK_REPORT.md
 ```
 
 ---
 
-## Project Timeline
+## Error Taxonomy (11 classes)
 
-### ✅ Checkpoint 1 — Complete (Feb 8, 2026)
-
-**Accomplished:**
-- [x] Built dataset sampler with HuggingFace streaming
-- [x] Implemented 11-category error taxonomy
-- [x] Created Streamlit labeling tool with side-by-side image display
-- [x] Integrated CLIP ViT-B-32 for feature extraction
-- [x] Trained baseline logistic regression classifiers
-- [x] Built prompt-failure correlation analyzer
-- [x] Verified end-to-end pipeline on 20 samples
-- [x] Generated all outputs: models, metrics, confusion matrix, 5 analysis plots
-- [x] Added cross-lingual schema (English + Bengali placeholders)
-
-**Deliverables:** 16 Python files (~1,800 lines), fully verified end-to-end.
-
-### 🔄 Checkpoint 2 — In Progress (Mar 1, 2026)
-
-**Goal: Prove that open-source image editors fail at instruction-following, using automated VLM evaluation.**
-
-**New approach (replaces manual labeling):**
-- [x] Integrated **InstructPix2Pix** (`timbrooks/instruct-pix2pix`) as the SOTA open-source editor
-- [x] Integrated **Qwen2.5-VL-3B** (`Qwen/Qwen2.5-VL-3B-Instruct`) as VLM-as-judge
-- [x] Built `generate_edits.py` — streams MagicBrush, runs IP2P, saves triplets (orig + model-edited + ground-truth)
-- [x] Built `vlm_judge.py` — sends (orig, edited, instruction) to Qwen VLM for structured JSON evaluation
-- [x] Built `analyze_vlm_results.py` — produces 5 plots + summary statistics
-- [x] Built human verification Streamlit UI for spot-checking VLM accuracy
-- [x] Added `VLMJudgment` and `HumanReview` dataclasses to schema
-- [x] Added resume support for long runs (both editor and judge scripts)
-- [x] Created central config (`config/eval_config.yaml`)
-- [ ] **Testing:** Initial 10-sample test run (in progress — resolving VRAM/dependency issues on Windows)
-
-**New files added (Checkpoint 2):**
-
-| File | Purpose |
-|---|---|
-| `scripts/generate_edits.py` | Stream MagicBrush → InstructPix2Pix → save edited images |
-| `scripts/vlm_judge.py` | Send triplets to Qwen2.5-VL → structured JSON judgments |
-| `scripts/analyze_vlm_results.py` | Aggregate judgments → plots + summary statistics |
-| `scripts/utils/editor_model.py` | `InstructPix2PixEditor` wrapper with memory management |
-| `scripts/utils/vlm_evaluator.py` | `QwenVLMJudge` wrapper with JSON parsing + fallback |
-| `apps/human_review.py` | Streamlit UI for spot-checking VLM accuracy *(pending)* |
-| `config/eval_config.yaml` | Central configuration for models, paths, parameters |
-
-**Known issues being resolved:**
-- `autoawq` requires `triton` (Linux-only) → switched to full-precision Qwen2.5-VL-3B (~7 GB VRAM)
-- Exit code 139 on first test run → likely OOM during model loading; investigating memory optimization
-
-### 📅 Checkpoint 3 — Planned (Target: 3-4 weeks)
-
-**Goals:**
-- [ ] Scale to 500+ samples with full analysis
-- [ ] Multi-lingual prompt support (Bengali, Spanish)
-- [ ] Explainability analysis (SHAP/LIME)
-- [ ] Compare multiple editing models (IP2P vs CosXL vs OmniGen)
-
-### 🎯 Long-Term Vision (Target: 2-3 months)
-
-**Goals:**
-- [ ] Publish benchmark dataset (1,000+ labeled triplets)
-- [ ] Submit paper to CVPR/NeurIPS
-- [ ] Deploy as production quality filter
-- [ ] Package as pip-installable library
-
----
-
-## What We Built
-
-### Checkpoint 2 Pipeline (NEW — automated evaluation)
-
-The key insight: **replace human labeling with VLM-as-judge**. Instead of manually reviewing hundreds of images, we use Qwen2.5-VL to automatically evaluate each edit and classify failures.
-
-1. **Edit generator** (`generate_edits.py`) — Streams MagicBrush samples, runs InstructPix2Pix on each, saves original + model-edited + ground-truth triplets
-2. **VLM judge** (`vlm_judge.py`) — Sends each triplet to Qwen2.5-VL with structured prompt; VLM returns JSON with adherence, error types, reasoning, and confidence
-3. **Results analyzer** (`analyze_vlm_results.py`) — Aggregates all judgments into plots and statistics: failure rate, error distribution, prompt-failure correlations
-4. **Human verification UI** (`apps/human_review.py`) — Streamlit tool where a human spot-checks VLM judgments to validate accuracy *(pending)*
-
-### Checkpoint 1 Pipeline (complete — CLIP baseline)
-
-1. **Dataset sampler** — Streams samples from HuggingFace MagicBrush, resizes images, saves metadata
-2. **Labeling tool** — Streamlit UI for human annotation with side-by-side image display
-3. **Embedding extractor** — CLIP ViT-B-32 feature extraction (image + text)
-4. **Baseline trainer** — Logistic regression classifiers for adherence + multi-label error prediction
-5. **Failure analyzer** — Correlates prompt properties with editing failures
-
-**Total codebase:** 23 Python files (~3,000+ lines) including utilities, schemas, configs, and two Streamlit apps.
+| # | Error Type               | Test Prevalence |
+|---|--------------------------|-----------------|
+| 0 | Wrong Object             | 17 (4.5%)       |
+| 1 | Missing Object           | 10 (2.6%)       |
+| 2 | Extra Object             | 3 (0.8%)        |
+| 3 | Wrong Attribute          | 37 (9.7%)       |
+| 4 | Spatial Error            | 12 (3.2%)       |
+| 5 | Style Mismatch           | 11 (2.9%)       |
+| 6 | Over-editing             | 33 (8.7%)       |
+| 7 | Under-editing            | 97 (25.5%)      |
+| 8 | Artifact / Quality Issue | 5 (1.3%)        |
+| 9 | Ambiguous Prompt         | 4 (1.1%)        |
+| 10| Failed Removal           | 15 (3.9%)       |
 
 ---
 
 ## Quick Start
 
-### Setup (once)
+### Setup
 
 ```bash
-python -m venv .venv
-source .venv/Scripts/activate   # Git Bash on Windows
-pip install --upgrade pip
+# Clone
+git clone https://github.com/Legend-2727/instruction-following-image-editing-eval.git
+cd instruction-following-image-editing-eval
 
-# Install PyTorch with CUDA support
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
-
-# Install everything else
-pip install diffusers transformers accelerate qwen-vl-utils safetensors \
-    open_clip_torch datasets huggingface_hub scikit-learn joblib \
-    pandas matplotlib seaborn pyyaml streamlit tqdm Pillow requests
+# Install dependencies (requires CUDA GPU)
+pip install -r requirements.txt
 ```
 
-### Checkpoint 2 — Automated VLM Evaluation (NEW)
+### Run Full Pipeline
 
 ```bash
-# Step 1: Generate edits with InstructPix2Pix (~10-15 sec/image on GPU)
-python scripts/generate_edits.py --n 10 --out data/eval          # quick test
-python scripts/generate_edits.py --n 500 --out data/eval --resume # full run
+# Step 1: Download MagicBrush samples
+python scripts/step1_load_dataset.py --n 1900 --out data/magicbrush --resume
 
-# Step 2: Judge edits with Qwen2.5-VL (~5-10 sec/image on GPU)
-python scripts/vlm_judge.py --data data/eval                      # quick test
-python scripts/vlm_judge.py --data data/eval --resume             # full run
+# Step 2: Translate to Nepali, Bangla, Hindi
+python scripts/step2_translate.py --data data/magicbrush --langs ne bn hi
 
-# Step 3: Analyze results
-python scripts/analyze_vlm_results.py --data data/eval --out runs/eval_analysis
+# Step 3: Heuristic annotation
+python scripts/step3_heuristic_judge.py --data data/magicbrush
 
-# Step 4: Human verification (spot-check VLM accuracy)
-streamlit run apps/human_review.py -- --data data/eval
+# Step 5: Train classifier
+nohup python scripts/step5_train_classifier.py \
+  --data data/magicbrush --out runs/classifier \
+  --epochs 25 --batch_size 16 --lr 2e-4 \
+  --unfreeze_text --patience 7 \
+  > logs/step5.log 2>&1 &
+
+# Step 6: Cross-lingual benchmark
+python scripts/step6_benchmark.py \
+  --data data/magicbrush --model_dir runs/classifier --out runs/benchmark
 ```
 
-### Checkpoint 1 — CLIP Baseline (verified working)
+### Optional: VLM-based annotation (higher quality, requires HF token)
 
 ```bash
-# Download MagicBrush samples
-python scripts/make_sample_dataset.py --n 20 --out data/sample --max_side 512 --seed 42
+# Set HuggingFace token for faster downloads
+export HF_TOKEN=your_token_here
 
-# Label samples (manual)
-streamlit run apps/label_tool.py
+# Run Qwen2.5-VL judge instead of heuristic
+python scripts/step3_vlm_judge.py --data data/magicbrush
 
-# Extract CLIP embeddings
-python scripts/extract_embeddings.py --data data/sample
-
-# Train baseline classifiers
-python scripts/train_baseline.py \
-    --data data/sample \
-    --labels data/annotations/labels.jsonl \
-    --out runs/baseline
-
-# Analyze prompt-failure correlations
-python scripts/analyze_failures.py \
-    --data data/sample \
-    --labels data/annotations/labels.jsonl \
-    --out runs/baseline/analysis
+# Human review via Gradio UI
+python scripts/step4_human_review.py --data data/magicbrush
 ```
-
----
-
-## Verification Results (Feb 8, 2026)
-
-We ran the **complete pipeline end-to-end with 20 samples**:
-
-| Step | Command | Time | Output | Status |
-|------|---------|------|--------|--------|
-| **Dataset** | `make_sample_dataset.py --n 20` | ~4.5 min | 20 orig + 20 edited images (512px), `metadata.jsonl`, `translations.csv` | ✅ Pass |
-| **Embeddings** | `extract_embeddings.py` | ~3 min | `embeddings.npz` (20 × 512 dims for orig, edit, text) | ✅ Pass |
-| **Labeling** | `streamlit run apps/label_tool.py` | Interactive | UI launches on `localhost:8501`, all features working | ✅ Pass |
-| **Training** | `train_baseline.py` | ~2 sec | Models saved: `adherence_model.joblib`, `error_model.joblib`, `metrics.json`, `confusion_matrix.png` | ✅ Pass |
-| **Analysis** | `analyze_failures.py` | ~1 sec | 5 plots + `correlations.csv` saved to `runs/baseline/analysis/` | ✅ Pass |
-
-### Key Findings from Test Run
-
-**Test data:** 20 samples with synthetic labels (8 Success, 4 Partial, 8 No)
-
-**Baseline metrics (train: 16, val: 4):**
-- **Adherence accuracy:** 25% (expected on 4 val samples with random labels)
-- **Adherence macro-F1:** 0.17
-- **Error mAP:** 0.75
-- **Confusion matrix:** Saved as PNG
-
-**Prompt-failure correlations:**
-- **Top correlated feature with failure:** `has_spatial_words` (r = 0.187)
-- Generated plots: correlation heatmap, error-type frequency bar chart, word-count box plot, adherence distribution pie chart
-
-**Notes:**
-- Low performance is expected — these are synthetic labels on 20 samples for pipeline verification
-- With real human labels on 200+ samples, meaningful patterns will emerge
-- All 5 analysis plots generated successfully
 
 ---
 
 ## Repository Structure
 
 ```
-project_root/
+instruction-following-image-editing-eval/
 ├── README.md
 ├── requirements.txt
+├── .gitignore
 ├── config/
-│   └── eval_config.yaml           # central config for models & paths
-├── data/
-│   ├── sample/                    # Checkpoint 1 data
-│   │   ├── images/orig/
-│   │   ├── images/edited/
-│   │   ├── metadata.jsonl
-│   │   ├── translations.csv
-│   │   └── embeddings.npz
-│   ├── eval/                      # Checkpoint 2 data (NEW)
-│   │   ├── images/orig/           # originals from MagicBrush
-│   │   ├── images/model_edited/   # InstructPix2Pix outputs
-│   │   ├── images/ground_truth/   # MagicBrush ground-truth edits
-│   │   ├── metadata.jsonl
-│   │   ├── vlm_judgments.jsonl    # Qwen VLM automated labels
-│   │   └── human_reviews.jsonl   # human spot-check results
-│   └── annotations/
-│       └── labels.jsonl
-├── apps/
-│   ├── label_tool.py              # Checkpoint 1 labeling UI
-│   └── human_review.py            # Checkpoint 2 VLM verification UI (pending)
+│   └── eval_config.yaml
 ├── scripts/
-│   ├── make_sample_dataset.py     # Checkpoint 1: data sampler
-│   ├── extract_embeddings.py      # Checkpoint 1: CLIP features
-│   ├── train_baseline.py          # Checkpoint 1: classifiers
-│   ├── analyze_failures.py        # Checkpoint 1: correlation analysis
-│   ├── generate_edits.py          # Checkpoint 2: IP2P edit generation (NEW)
-│   ├── vlm_judge.py               # Checkpoint 2: VLM-as-judge (NEW)
-│   ├── analyze_vlm_results.py     # Checkpoint 2: VLM results analysis (NEW)
+│   ├── step1_load_dataset.py        # Stream MagicBrush with retry
+│   ├── step2_translate.py           # NLLB-200 translation (ne/bn/hi)
+│   ├── step3_heuristic_judge.py     # Fast heuristic annotation
+│   ├── step3_vlm_judge.py           # Qwen2.5-VL annotation (optional)
+│   ├── step4_human_review.py        # Gradio human review UI
+│   ├── step5_train_classifier.py    # CLIP+XLM-R classifier training
+│   ├── step6_benchmark.py           # Cross-lingual benchmark
+│   ├── compute_ssim.py              # SSIM computation utility
+│   ├── run_pipeline.sh              # End-to-end pipeline runner
+│   ├── make_sample_dataset.py       # (CP1) Dataset sampler
+│   ├── extract_embeddings.py        # (CP1) CLIP feature extraction
+│   ├── train_baseline.py            # (CP1) Logistic regression baseline
+│   ├── analyze_failures.py          # (CP1) Correlation analysis
+│   ├── analyze_vlm_results.py       # (CP2) VLM results analysis
+│   ├── generate_edits.py            # (CP2) InstructPix2Pix edits
 │   └── utils/
 │       ├── __init__.py
-│       ├── io.py                  # JSONL / image I/O
-│       ├── schema.py              # labels, taxonomy, VLMJudgment, HumanReview
-│       ├── prompt_features.py     # prompt feature extraction
-│       ├── clip_encoder.py        # CLIP image/text embedder
-│       ├── text_encoder.py        # text-encoder interface (cross-lingual)
-│       ├── editor_model.py        # InstructPix2Pix wrapper (NEW)
-│       └── vlm_evaluator.py       # Qwen2.5-VL judge wrapper (NEW)
+│       ├── io.py                    # JSONL / image I/O
+│       ├── schema.py                # Error taxonomy, dataclasses
+│       ├── clip_encoder.py          # CLIP image/text embedder
+│       ├── text_encoder.py          # Text encoder interface
+│       ├── prompt_features.py       # Prompt feature extraction
+│       ├── editor_model.py          # InstructPix2Pix wrapper
+│       └── vlm_evaluator.py         # Qwen2.5-VL judge wrapper
+├── apps/
+│   ├── label_tool.py                # (CP1) Streamlit labeling UI
+│   └── human_review_tool.py         # Gradio human review app
 ├── notebooks/
 │   └── checkpoint1_demo.ipynb
-└── runs/
-    ├── baseline/                  # Checkpoint 1 outputs
-    └── eval_analysis/             # Checkpoint 2 outputs (NEW)
-        ├── adherence_distribution.png
-        ├── error_type_frequency.png
-        ├── heatmap_correlations.png
-        ├── confidence_distribution.png
-        ├── failure_examples.png
-        ├── correlations.csv
-        └── summary.json
+├── data/                            # (git-ignored, generated at runtime)
+│   └── magicbrush/
+│       ├── images/source/           # 1,903 source PNGs
+│       ├── images/target/           # 1,903 target PNGs
+│       ├── metadata.jsonl           # 1,900 records with translations
+│       ├── metadata_translated.jsonl
+│       ├── vlm_annotations.jsonl    # Heuristic annotations
+│       └── annotations_final.jsonl  # Final labels (11-class vectors)
+├── runs/                            # (git-ignored, generated at runtime)
+│   ├── classifier/
+│   │   ├── best_model.pt            # Best checkpoint (~1.6 GB)
+│   │   ├── last_model.pt            # Last checkpoint
+│   │   ├── config.json
+│   │   ├── test_metrics.json
+│   │   ├── test_set.jsonl
+│   │   └── training_history.json
+│   └── benchmark/
+│       ├── BENCHMARK_REPORT.md
+│       └── benchmark_results.json
+└── logs/                            # (git-ignored)
+    ├── step2.log
+    ├── step3.log
+    ├── step5.log
+    └── step6.log
 ```
-
----
-
-## What Each Script Does
-
-### Checkpoint 2 Scripts (NEW)
-
-| Script | Purpose |
-|---|---|
-| `generate_edits.py` | Streams MagicBrush samples, runs InstructPix2Pix on each original image using the MagicBrush instruction. Saves original + model-edited + ground-truth images. Supports `--resume` for interrupted runs. |
-| `vlm_judge.py` | Loads Qwen2.5-VL-3B, sends (original, model-edited, instruction) to the VLM for each sample. VLM returns structured JSON: adherence (Success/Partial/No), error types (11-category), reasoning, confidence. Supports `--resume`. |
-| `analyze_vlm_results.py` | Merges metadata + judgments, produces 5 plots (adherence pie, error bar chart, confidence histogram, correlation heatmap, failure gallery) + `summary.json`. |
-| `human_review.py` | Streamlit UI showing the VLM's judgment alongside the images. Human marks whether VLM got adherence and errors correct. Saves spot-check results to `human_reviews.jsonl`. *(pending)* |
-
-### Checkpoint 1 Scripts
-
-| Script | Purpose |
-|---|---|
-| `make_sample_dataset.py` | Streams N samples from [MagicBrush](https://huggingface.co/datasets/osunlp/MagicBrush), resizes images to `max_side`, saves metadata JSONL.  Falls back to local-folder mode if offline. |
-| `label_tool.py` | Streamlit UI showing orig/edited side-by-side + prompt; annotator picks adherence & error types; labels appended to `labels.jsonl`. |
-| `extract_embeddings.py` | Loads CLIP ViT-B-32 and encodes all images + prompts → `embeddings.npz`. |
-| `train_baseline.py` | Builds a 1,538-d feature vector per sample, trains logistic-regression heads for adherence (3-class) and error types (multi-label). Prints metrics + saves models. |
-| `analyze_failures.py` | Extracts prompt features (word count, spatial words, color count, …), correlates them with failure/error labels, outputs a CSV and plots. |
-
-### Utility Modules
-
-| Module | Purpose |
-|---|---|
-| `utils/editor_model.py` | `InstructPix2PixEditor` class — loads diffusers pipeline, configurable guidance scales, attention slicing for lower VRAM, `.unload()` to free GPU memory. **(NEW)** |
-| `utils/vlm_evaluator.py` | `QwenVLMJudge` class — loads Qwen2.5-VL, structured prompt template with 11-error taxonomy, JSON response parsing with regex fallback, `.unload()` to free GPU. **(NEW)** |
-| `utils/schema.py` | `ADHERENCE_LABELS`, `ERROR_TYPES`, `MetadataRecord`, `LabelRecord`, `VLMJudgment` **(NEW)**, `HumanReview` **(NEW)** |
-| `utils/io.py` | JSONL read/write, image resize, directory helpers |
-| `utils/prompt_features.py` | 6 regex-based prompt features for correlation analysis |
-| `utils/clip_encoder.py` | CLIP ViT-B-32 batch encoding |
-| `utils/text_encoder.py` | Abstract text encoder interface for cross-lingual support |
-
----
-
-## Error Taxonomy
-
-| # | Error Type |
-|---|---|
-| 0 | Wrong Object |
-| 1 | Missing Object |
-| 2 | Extra Object |
-| 3 | Wrong Attribute |
-| 4 | Spatial Error |
-| 5 | Style Mismatch |
-| 6 | Over-editing |
-| 7 | Under-editing |
-| 8 | Artifact / Quality Issue |
-| 9 | Ambiguous Prompt |
-| 10 | Failed Removal |
-
----
-
-## Cross-Lingual Support
-
-The schema includes a `lang` field on every sample.  The text-encoder interface
-(`text_encoder.py`) accepts `(text, lang)` so a multilingual backbone can be
-swapped in later.  For now:
-
-- `data/sample/translations.csv` ships with a few English + Bengali stub rows.
-- CLIP encodes raw text regardless of language (works decently for Latin-script
-  languages; Bengali will need a multilingual encoder in later checkpoints).
 
 ---
 
 ## Technical Details
 
-### Checkpoint 2 — Automated VLM-as-Judge Pipeline
+### Models Used
 
-**Image Editor:** InstructPix2Pix (`timbrooks/instruct-pix2pix`)
-- Stable Diffusion 1.5 backbone with instruction conditioning
-- ~6-7 GB VRAM in fp16, attention slicing enabled for lower-VRAM GPUs
-- Configurable: `guidance_scale` (text), `image_guidance_scale` (image fidelity), `num_inference_steps`
+| Component | Model | Size | Role |
+|-----------|-------|------|------|
+| Vision encoder | CLIP ViT-B/32 (`laion2b_s34b_b79k`) | 87.8M params (frozen) | Dual image encoding |
+| Text encoder | XLM-RoBERTa-base | 278M params (last 2 layers unfrozen) | Multilingual instruction encoding |
+| Translator | NLLB-200-distilled-1.3B | 1.3B params | English → Nepali/Bangla/Hindi |
+| Fusion + classifier | Cross-attention + MLP | 18.3M params (trainable) | Multimodal fusion → 11-class output |
 
-**VLM Judge:** Qwen2.5-VL-3B (`Qwen/Qwen2.5-VL-3B-Instruct`)
-- 3B parameter vision-language model, ~7-8 GB VRAM full precision
-- Multi-image input: sends original + model-edited images in a single prompt
-- Structured prompt template defining 3 adherence levels and 11 error types
-- JSON output with regex fallback parsing for robustness
+### Training Configuration
 
-**Evaluation Taxonomy (11 error types):**
-`wrong_object`, `wrong_attribute`, `wrong_location`, `incomplete_edit`, `over_edit`, `color_mismatch`, `shape_distortion`, `background_corruption`, `text_rendering_fail`, `style_mismatch`, `no_visible_change`
+| Parameter | Value |
+|-----------|-------|
+| Optimizer | AdamW (lr=2e-4, weight_decay=0.01) |
+| Scheduler | Linear warmup (100 steps) + cosine annealing |
+| Loss | Focal Loss (gamma=2.0, alpha=1.0) + class-weighted pos_weight |
+| Batch size | 16 (×2 gradient accumulation = effective 32) |
+| Epochs | 25 max (early stopped at epoch 20) |
+| Prediction threshold | 0.3 |
+| Train/Val/Test | 1,330 / 190 / 380 |
 
-**Sequential model loading:** Editor generates all edits first, then unloads. VLM loads separately to judge. This prevents VRAM conflicts on 12 GB cards.
+### Hardware
 
-### Checkpoint 1 — CLIP Baseline
-
-**Feature construction (1,538-d per sample):**
-```
-[emb_edit (512-d), emb_orig (512-d), (emb_edit - emb_orig) (512-d),
- cosine(prompt, edit_img) (1-d), cosine(prompt, orig_img) (1-d)]
-```
-
-**Classifiers:**
-- **Adherence:** 3-class logistic regression (Success / Partial / No)
-- **Error types:** 11-label OneVsRest logistic regression
-
-**CLIP model:** ViT-B-32 with `laion2b_s34b_b79k` weights (~605 MB download, ~600 MB VRAM at inference)
-
-### Prompt Features Extracted
-
-For correlation analysis, we extract 6 interpretable features from each prompt:
-- `word_count` — number of tokens
-- `char_count` — string length
-- `has_spatial_words` — presence of spatial keywords (left/right/above/below/etc.)
-- `count_of_colors` — number of color mentions
-- `num_changes_proxy` — count of "and" + commas (proxy for multi-edit complexity)
-- `specificity_proxy` — count of named objects, directional cues, precision adverbs
+| Component | Spec |
+|-----------|------|
+| GPU | NVIDIA RTX 5090 (32 GB VRAM) |
+| RAM | 49 GB |
+| Disk | ~460 GB free |
+| CUDA | 13.0 / Driver 580.95.05 |
+| Python | 3.10.12 |
+| PyTorch | 2.10.0+cu128 |
 
 ---
 
-## Known Issues & Fixes Applied
+## What to Continue Next
 
-### Checkpoint 2
+### Immediate Improvements (high impact)
 
-4. **autoawq cannot install on Windows** — `autoawq` depends on `triton` which is Linux-only. Solution: Switched from Qwen2.5-VL-7B-Instruct-AWQ to **Qwen2.5-VL-3B-Instruct** (full precision). Fits within ~7-8 GB VRAM.
+1. **VLM-based annotation upgrade** — Replace heuristic annotations with Qwen2.5-VL judgments. Set `HF_TOKEN` env var to avoid rate limiting, then run `step3_vlm_judge.py`. This should significantly improve label quality and boost F1 across all classes.
 
-5. **Exit code 139 (SIGSEGV) when running `generate_edits.py`** — First test run with `--n 10` crashed during model loading on RTX 3060 (12 GB). Likely cause: OOM loading InstructPix2Pix (~6-7 GB fp16) + dataset streaming overhead. Status: **under investigation**. Potential fixes: reduce image resolution, try CPU offloading, check Python 3.13 compatibility.
+2. **Scale dataset** — Download all 5,000+ MagicBrush samples (currently 1,900). More data, especially for rare classes (Extra Object, Artifact/Quality), will help the tail classes.
 
-### Checkpoint 1
+3. **Data augmentation** — Apply random language mixing during training (randomly pick en/ne/bn/hi per sample) to improve cross-lingual transfer.
 
-1. **MagicBrush streaming is slow** — Each parquet shard contains ~130 MB of embedded images. Solution: Skip `.shuffle()` for streaming; instead skip a random offset for variety. Reduces download from 45 min to ~5 min for 20 samples.
+### Architecture Improvements
 
-2. **scikit-learn API change** — `multi_class="multinomial"` parameter removed in sklearn 1.3+. Fixed by removing the parameter (multinomial is now default for multiclass).
+4. **Unfreeze more XLM-R layers** — Currently only last 2 layers are unfrozen. Gradually unfreezing more layers (e.g., last 4) with discriminative learning rates could help.
 
-3. **Windows symlinks warning** — HuggingFace Hub warns about symlinks on Windows. Harmless; caching still works but uses more disk space. To fix: enable Developer Mode or run as admin.
+5. **Per-class threshold tuning** — Currently using a flat 0.3 threshold. Tune per-class thresholds on the validation set to optimize each class independently.
+
+6. **Larger vision backbone** — Switch from CLIP ViT-B/32 to ViT-L/14 for richer visual features (requires ~4x more VRAM).
+
+7. **Add more languages** — Extend to other low-resource languages (Urdu, Tamil, Thai) to strengthen the cross-lingual evaluation.
+
+### Publication Path
+
+8. **Ablation studies** — Freeze/unfreeze analysis, focal loss vs BCE, heuristic vs VLM labels, mono- vs cross-lingual.
+
+9. **Comparison baselines** — Train a text-only baseline (no images) and image-only baseline (no text) to quantify multimodal contribution.
+
+10. **Error analysis** — Deep-dive into failure modes: which samples are hardest, what do zero-F1 classes look like, are certain edit types systematically harder?
+
+11. **Write paper** — Target ACL/EMNLP (NLP + multilinguality angle) or CVPR/ECCV (vision + editing angle). The unique contribution is the **multilingual error taxonomy for image editing evaluation**.
 
 ---
 
-## Hardware & Performance
+## Previous Checkpoints
 
-**Tested on:**
-- **CPU:** Standard x64 processor
-- **GPU:** RTX 3060 (12 GB VRAM) — required for Checkpoint 2 (InstructPix2Pix + Qwen VLM)
-- **RAM:** 16 GB recommended
-- **Disk:** ~5 GB for model weights + ~500 MB for 500 samples
-- **Bandwidth:** Streaming from HuggingFace; model downloads ~3-4 GB each on first run
+<details>
+<summary>Checkpoint 1 (Feb 8, 2026) — CLIP Baseline</summary>
 
-**VRAM Requirements (Checkpoint 2):**
+- Built dataset sampler with HuggingFace streaming
+- Implemented 11-category error taxonomy
+- Created Streamlit labeling tool
+- Integrated CLIP ViT-B-32 for feature extraction
+- Trained baseline logistic regression classifiers
+- Built prompt-failure correlation analyzer
+- Verified end-to-end on 20 samples
 
-| Component | VRAM (fp16) | Notes |
-|---|---|---|
-| InstructPix2Pix | ~6-7 GB | Attention slicing enabled |
-| Qwen2.5-VL-3B | ~7-8 GB | Full precision (AWQ unavailable on Windows) |
-| CLIP ViT-B-32 | ~600 MB | Checkpoint 1 only |
+</details>
 
-> **Note:** Editor and VLM run sequentially (not simultaneously). Peak VRAM ≈ 7-8 GB. Upgrade to RTX 4090 planned for faster throughput.
+<details>
+<summary>Checkpoint 2 (Mar 1, 2026) — VLM-as-Judge Design</summary>
+
+- Integrated InstructPix2Pix as SOTA open-source editor
+- Integrated Qwen2.5-VL-3B as VLM-as-judge
+- Built edit generation, VLM judging, and analysis scripts
+- Added human verification Streamlit UI
+- Had VRAM/dependency issues on Windows (resolved in CP3 by moving to Linux)
+
+</details>
+
+### Checkpoint 3 (Mar 7, 2026) — Multilingual Classifier (Current)
+
+- Migrated to Linux (Ubuntu) + RTX 5090
+- Downloaded 1,900 MagicBrush samples via streaming
+- Translated all instructions to Nepali, Bangla, Hindi using NLLB-200
+- Created heuristic annotation pipeline (SSIM + pixel diff + keywords)
+- Designed and trained CLIP ViT-B/32 + XLM-RoBERTa multimodal classifier
+- Implemented Focal Loss + partial unfreezing for class imbalance
+- Ran cross-lingual benchmark across 4 languages
+- Computed CLIP-I and SSIM image quality metrics
+- Generated full benchmark report
+
+---
+
+## License
+
+MIT
 
 **Estimated Timing (Checkpoint 2, 10 samples, RTX 3060):**
 - Model download (first run): ~10-15 min
