@@ -1,255 +1,349 @@
-"""human_review_tool.py — Streamlit UI for spot-checking VLM judgments.
+"""human_review_tool.py — Streamlit UI for adjudicating dual-judge outputs.
 
-Run:
-    streamlit run apps/human_review_tool.py -- --data data/eval
+Run from the repo root, for example:
 
-The reviewer sees:
-  1. Original image, Model-edited image, Ground Truth (side by side)
-  2. The edit instruction
-  3. The VLM's judgment (adherence + errors + reasoning)
-  4. Buttons: "VLM Correct" / "VLM Wrong" + option to provide corrected labels
+    streamlit run apps/human_review_tool.py -- \
+      --queue artifacts/reviews/pilot_100_review_queue.jsonl \
+      --review_log artifacts/reviews/human_reviews.jsonl \
+      --data_dir /path/to/hf_snapshot_root
 
-Results saved to ``data/eval/human_reviews.jsonl``.
+The app reads a prioritized review queue, displays source/edited images, both
+judge outputs, and appends one schema-compliant review action per submission.
+It never mutates the base judged dataset.
 """
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-from datetime import datetime
-
-# Streamlit must be imported first
+# Streamlit should be imported before other third-party imports.
 import streamlit as st
 
-# Project imports
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
-from utils.io import load_jsonl, append_jsonl, ensure_dirs
-from utils.schema import ADHERENCE_LABELS, ERROR_TYPES, VLMJudgment, HumanReview
+import sys
+from pathlib import Path
+from typing import Any, Dict, List
 
-# ── Config ───────────────────────────────────────────────────────────────────
-DATA_DIR = Path("data/eval")
-REVIEW_PATH = DATA_DIR / "human_reviews.jsonl"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
+from utils.io import append_jsonl, ensure_dirs, load_jsonl, resolve_data_path
+from utils.review import load_latest_review_actions, sort_review_queue
+from utils.schema import ADHERENCE_LABELS, ERROR_TYPES, ReviewActionRecord
 
-def parse_args():
-    """Parse --data from streamlit's special arg handling."""
-    args = sys.argv[1:]
-    data_dir = DATA_DIR
-    for i, a in enumerate(args):
-        if a == "--data" and i + 1 < len(args):
-            data_dir = Path(args[i + 1])
-    return data_dir
+DEFAULT_QUEUE_PATH = PROJECT_ROOT / "artifacts" / "reviews" / "review_queue.jsonl"
+DEFAULT_REVIEW_LOG = PROJECT_ROOT / "artifacts" / "reviews" / "human_reviews.jsonl"
+DEFAULT_DATA_DIR = PROJECT_ROOT
+DEFAULT_REVIEWER = "reviewer1"
 
 
-def load_review_data(data_dir: Path):
-    """Load metadata + VLM judgments, return merged list."""
-    meta = {m["id"]: m for m in load_jsonl(data_dir / "metadata.jsonl")}
-    judgments = load_jsonl(data_dir / "vlm_judgments.jsonl")
 
-    merged = []
-    for j in judgments:
-        uid = j["id"]
-        if uid in meta:
-            merged.append({**meta[uid], **j})
-    return merged
+def parse_args() -> Dict[str, Any]:
+    """Parse lightweight Streamlit extra args from ``sys.argv``."""
+    args = {
+        "queue": DEFAULT_QUEUE_PATH,
+        "review_log": DEFAULT_REVIEW_LOG,
+        "data_dir": DEFAULT_DATA_DIR,
+        "reviewer_id": DEFAULT_REVIEWER,
+    }
+    raw = sys.argv[1:]
+    for idx, token in enumerate(raw):
+        if token == "--queue" and idx + 1 < len(raw):
+            args["queue"] = Path(raw[idx + 1])
+        elif token == "--review_log" and idx + 1 < len(raw):
+            args["review_log"] = Path(raw[idx + 1])
+        elif token == "--data_dir" and idx + 1 < len(raw):
+            args["data_dir"] = Path(raw[idx + 1])
+        elif token == "--reviewer_id" and idx + 1 < len(raw):
+            args["reviewer_id"] = str(raw[idx + 1])
+    return args
 
 
-def get_reviewed_ids(review_path: Path) -> set:
-    """Load already reviewed sample IDs."""
-    reviews = load_jsonl(review_path)
-    return {r["id"] for r in reviews}
+
+def _load_queue(queue_path: Path) -> List[Dict[str, Any]]:
+    queue = load_jsonl(queue_path)
+    return sort_review_queue(queue)
 
 
-# ── Streamlit App ────────────────────────────────────────────────────────────
-def main():
-    data_dir = parse_args()
+
+def _format_label_bundle(adherence: Any, taxonomy: Any) -> str:
+    adh = adherence if adherence else "—"
+    if isinstance(taxonomy, list):
+        tax = ", ".join(taxonomy) if taxonomy else "None"
+    else:
+        tax = str(taxonomy or "None")
+    return f"**Adherence:** {adh}  \\n**Taxonomy:** {tax}"
+
+
+
+def _show_image_panel(title: str, path: Path) -> None:
+    st.markdown(f"**{title}**")
+    if path.exists():
+        st.image(str(path), use_container_width=True)
+    else:
+        st.warning(f"Image not found: {path}")
+
+
+
+def _latest_action_counts(latest_reviews: Dict[str, Dict[str, Any]]) -> Dict[str, int]:
+    counts = {"approved": 0, "corrected": 0, "disputed": 0}
+    for row in latest_reviews.values():
+        action = str(row.get("action_type", "")).strip()
+        if action in counts:
+            counts[action] += 1
+    return counts
+
+
+
+def main() -> None:
+    cfg = parse_args()
 
     st.set_page_config(
-        page_title="Human Review: VLM Judgments",
+        page_title="Human Review — Dual Judge Queue",
         page_icon="🔍",
         layout="wide",
     )
-
-    st.title("🔍 Human Review: VLM-as-Judge Verification")
-    st.markdown(
-        "Verify whether the VLM judge correctly evaluated each image edit. "
-        "This helps measure **VLM-human agreement** and calibrate the automated pipeline."
+    st.title("🔍 Human Review — Dual Judge Adjudication")
+    st.caption(
+        "Append-only review logging for dual-judge disagreement resolution. "
+        "The queue is read-only; only the review log is written."
     )
 
-    # Load data
-    all_samples = load_review_data(data_dir)
-    if not all_samples:
-        st.error(f"No data found in `{data_dir}`. Run `generate_edits.py` and `vlm_judge.py` first.")
+    queue_path: Path = Path(cfg["queue"])
+    review_log_path: Path = Path(cfg["review_log"])
+    data_dir: Path = Path(cfg["data_dir"])
+
+    queue_records = _load_queue(queue_path)
+    latest_reviews = load_latest_review_actions(review_log_path)
+    reviewed_ids = set(latest_reviews.keys())
+    action_counts = _latest_action_counts(latest_reviews)
+
+    if not queue_records:
+        st.error(
+            f"No review queue found at `{queue_path}`. Build one first with `scripts/build_review_queue.py`."
+        )
         return
 
-    reviewed_ids = get_reviewed_ids(data_dir / "human_reviews.jsonl")
-    pending = [s for s in all_samples if s["id"] not in reviewed_ids]
-
-    # Sidebar stats
-    with st.sidebar:
-        st.header("Progress")
-        total = len(all_samples)
-        done = len(reviewed_ids)
-        st.metric("Reviewed", f"{done}/{total}")
-        st.progress(done / total if total else 0)
-
-        if done > 0:
-            reviews = load_jsonl(data_dir / "human_reviews.jsonl")
-            correct_adh = sum(1 for r in reviews if r.get("vlm_adherence_correct", False))
-            correct_err = sum(1 for r in reviews if r.get("vlm_errors_correct", False))
-            st.metric("VLM Adherence Accuracy", f"{correct_adh}/{done} ({100*correct_adh/done:.0f}%)")
-            st.metric("VLM Error-Type Accuracy", f"{correct_err}/{done} ({100*correct_err/done:.0f}%)")
-
-        st.divider()
-        st.caption(f"Data dir: `{data_dir}`")
-
-    if not pending:
-        st.success(f"✅ All {total} samples reviewed! VLM-human agreement stats are in the sidebar.")
-        return
-
-    # Session state for navigation
+    if "reviewer_id" not in st.session_state:
+        st.session_state.reviewer_id = str(cfg["reviewer_id"])
+    if "hide_reviewed" not in st.session_state:
+        st.session_state.hide_reviewed = True
     if "review_idx" not in st.session_state:
         st.session_state.review_idx = 0
 
-    idx = st.session_state.review_idx
-    if idx >= len(pending):
+    with st.sidebar:
+        st.header("Queue")
+        st.session_state.reviewer_id = st.text_input(
+            "Reviewer ID",
+            value=st.session_state.reviewer_id,
+        )
+        st.session_state.hide_reviewed = st.checkbox(
+            "Hide already reviewed samples",
+            value=st.session_state.hide_reviewed,
+        )
+        st.caption(f"Queue: `{queue_path}`")
+        st.caption(f"Review log: `{review_log_path}`")
+        st.caption(f"Data dir: `{data_dir}`")
+        st.divider()
+
+        total = len(queue_records)
+        reviewed = len(reviewed_ids & {str(r.get('id', '')) for r in queue_records})
+        remaining = total - reviewed
+        st.metric("Reviewed", f"{reviewed}/{total}")
+        st.metric("Remaining", remaining)
+        st.progress((reviewed / total) if total else 0.0)
+
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Approved", action_counts["approved"])
+        c2.metric("Corrected", action_counts["corrected"])
+        c3.metric("Disputed", action_counts["disputed"])
+
+    visible_queue = (
+        [r for r in queue_records if str(r.get("id", "")) not in reviewed_ids]
+        if st.session_state.hide_reviewed
+        else queue_records
+    )
+
+    if not visible_queue:
+        st.success("✅ No pending samples remain in the current view.")
+        return
+
+    if st.session_state.review_idx >= len(visible_queue):
         st.session_state.review_idx = 0
-        idx = 0
 
-    sample = pending[idx]
-    uid = sample["id"]
-    prompt = sample.get("prompt_meta", sample.get("prompt", ""))
+    idx = st.session_state.review_idx
+    sample = visible_queue[idx]
+    sample_id = str(sample.get("id", ""))
+    latest_review = latest_reviews.get(sample_id)
 
-    st.markdown(f"### Sample {idx + 1} / {len(pending)} remaining — `{uid}`")
+    source_image = resolve_data_path(data_dir, sample.get("source_image", ""))
+    edited_image = resolve_data_path(data_dir, sample.get("edited_image", ""))
 
-    # ── Instruction ──────────────────────────────────────────────────────
-    st.info(f"**Edit instruction:** {prompt}")
+    st.markdown(f"### Sample {idx + 1} / {len(visible_queue)} — `{sample_id}`")
+    meta_cols = st.columns(4)
+    meta_cols[0].metric("Priority", str(sample.get("review_priority", "—")).title())
+    meta_cols[1].metric("Mean confidence", f"{float(sample.get('mean_confidence', 0.0) or 0.0):.2f}")
+    meta_cols[2].metric("Agreement", "Yes" if bool(sample.get("overall_agreement")) else "No")
+    meta_cols[3].metric("Mode", str(sample.get("judge_mode", "unknown")))
 
-    # ── Images side by side ──────────────────────────────────────────────
-    col1, col2, col3 = st.columns(3)
+    reasons = sample.get("review_reasons", []) or []
+    if reasons:
+        st.caption("Review reasons: " + ", ".join(reasons))
 
-    orig_path = data_dir / sample.get("orig_path", "")
-    edit_path = data_dir / sample.get("edited_path", "")
-    gt_path   = data_dir / sample.get("gt_path", "")
+    instruction = sample.get("instruction_en") or sample.get("instruction") or ""
+    st.info(f"**Instruction:** {instruction}")
 
-    with col1:
-        st.markdown("**Original**")
-        if orig_path.exists():
-            st.image(str(orig_path), use_container_width=True)
-        else:
-            st.warning("Image not found")
+    img_col1, img_col2 = st.columns(2)
+    with img_col1:
+        _show_image_panel("Source image", source_image)
+    with img_col2:
+        _show_image_panel("Edited image", edited_image)
 
-    with col2:
-        st.markdown("**Model Edit (InstructPix2Pix)**")
-        if edit_path.exists():
-            st.image(str(edit_path), use_container_width=True)
-        else:
-            st.warning("Image not found")
-
-    with col3:
-        st.markdown("**Ground Truth (MagicBrush)**")
-        if gt_path and Path(gt_path).exists():
-            st.image(str(gt_path), use_container_width=True)
-        else:
-            st.caption("Not available")
-
-    # ── VLM Judgment Display ─────────────────────────────────────────────
     st.markdown("---")
-    st.markdown("### 🤖 VLM Judgment")
+    st.markdown("### Labels and judge outputs")
+    info_col1, info_col2, info_col3 = st.columns(3)
 
-    vlm_adherence = sample.get("adherence_vlm", sample.get("adherence", "N/A"))
-    vlm_errors = sample.get("error_types_vlm", sample.get("error_types", []))
-    vlm_reasoning = sample.get("reasoning", "")
-    vlm_confidence = sample.get("confidence", 0.0)
-
-    if isinstance(vlm_errors, list):
-        vlm_errors_str = ", ".join(vlm_errors) if vlm_errors else "None"
-    else:
-        vlm_errors_str = str(vlm_errors)
-
-    adh_color = {"Success": "🟢", "Partial": "🟡", "No": "🔴"}.get(vlm_adherence, "⚪")
-
-    vcol1, vcol2 = st.columns(2)
-    with vcol1:
-        st.markdown(f"**Adherence:** {adh_color} {vlm_adherence}")
-        st.markdown(f"**Confidence:** {vlm_confidence:.2f}")
-    with vcol2:
-        st.markdown(f"**Error types:** {vlm_errors_str}")
-        st.markdown(f"**Reasoning:** {vlm_reasoning}")
-
-    # ── Human Review Form ────────────────────────────────────────────────
-    st.markdown("---")
-    st.markdown("### ✅ Your Review")
-
-    with st.form(key=f"review_{uid}"):
-        r1, r2 = st.columns(2)
-
-        with r1:
-            adh_correct = st.radio(
-                "Is the VLM's **adherence** rating correct?",
-                ["Yes", "No"],
-                index=0,
-                horizontal=True,
+    with info_col1:
+        st.markdown("**Original / existing labels**")
+        st.markdown(
+            _format_label_bundle(
+                sample.get("original_adherence_label"),
+                sample.get("original_taxonomy_labels", []),
             )
-
-        with r2:
-            err_correct = st.radio(
-                "Are the VLM's **error types** correct?",
-                ["Yes", "No"],
-                index=0,
-                horizontal=True,
+        )
+        if sample.get("original_label_source"):
+            st.caption(f"Source: {sample.get('original_label_source')}")
+        st.markdown("**Current provisional labels**")
+        st.markdown(
+            _format_label_bundle(
+                sample.get("previous_adherence_label"),
+                sample.get("previous_taxonomy_labels", []),
             )
-
-        # If VLM is wrong, let human provide corrections
-        st.markdown("**If VLM is wrong, provide your corrections below:**")
-        c1, c2 = st.columns(2)
-        with c1:
-            human_adh = st.selectbox(
-                "Correct adherence",
-                ["(keep VLM)"] + ADHERENCE_LABELS,
-                index=0,
-            )
-        with c2:
-            human_errors = st.multiselect(
-                "Correct error types",
-                ERROR_TYPES,
-                default=[],
-            )
-
-        notes = st.text_input("Notes (optional)", "")
-
-        submitted = st.form_submit_button("Submit Review", type="primary", use_container_width=True)
-
-    if submitted:
-        review = HumanReview(
-            id=uid,
-            vlm_adherence_correct=(adh_correct == "Yes"),
-            vlm_errors_correct=(err_correct == "Yes"),
-            human_adherence=human_adh if human_adh != "(keep VLM)" else vlm_adherence,
-            human_error_types=human_errors if human_errors else (vlm_errors if isinstance(vlm_errors, list) else []),
-            notes=notes,
-            reviewer="reviewer1",
+        )
+        st.caption(
+            f"Source: {sample.get('previous_label_source', 'unknown')} | "
+            f"Confidence: {float(sample.get('previous_label_confidence', 0.0) or 0.0):.2f}"
         )
 
-        ensure_dirs((data_dir / "human_reviews.jsonl").parent)
-        append_jsonl(review.to_dict(), data_dir / "human_reviews.jsonl")
+    with info_col2:
+        st.markdown("**Judge A**")
+        st.markdown(
+            _format_label_bundle(
+                sample.get("judge_a_adherence"),
+                sample.get("judge_a_taxonomy", []),
+            )
+        )
+        st.caption(f"Confidence: {float(sample.get('judge_a_confidence', 0.0) or 0.0):.2f}")
+        raw_a = str(sample.get("judge_a_raw", "")).strip()
+        if raw_a:
+            st.text_area("Judge A notes", value=raw_a, height=120, disabled=True)
 
-        st.success(f"✅ Saved review for `{uid}`")
-        st.session_state.review_idx = idx + 1
+    with info_col3:
+        st.markdown("**Judge B**")
+        st.markdown(
+            _format_label_bundle(
+                sample.get("judge_b_adherence"),
+                sample.get("judge_b_taxonomy", []),
+            )
+        )
+        st.caption(f"Confidence: {float(sample.get('judge_b_confidence', 0.0) or 0.0):.2f}")
+        raw_b = str(sample.get("judge_b_raw", "")).strip()
+        if raw_b:
+            st.text_area("Judge B notes", value=raw_b, height=120, disabled=True)
+
+    if latest_review:
+        st.markdown("---")
+        st.warning(
+            "This sample already has a latest review action in the log. "
+            "Submitting again will append a new row; the latest timestamp wins during merge."
+        )
+        st.json(latest_review)
+
+    st.markdown("---")
+    st.markdown("### Submit human decision")
+
+    default_adh = sample.get("previous_adherence_label")
+    if default_adh not in ADHERENCE_LABELS:
+        default_adh = ADHERENCE_LABELS[0]
+    default_adh_idx = ADHERENCE_LABELS.index(default_adh)
+
+    default_taxonomy = [
+        t for t in sample.get("previous_taxonomy_labels", []) if t in ERROR_TYPES
+    ]
+
+    with st.form(key=f"review_form_{sample_id}"):
+        final_adherence = st.radio(
+            "Final adherence",
+            ADHERENCE_LABELS,
+            index=default_adh_idx,
+            horizontal=True,
+        )
+        final_taxonomy = st.multiselect(
+            "Final taxonomy (select all that apply)",
+            ERROR_TYPES,
+            default=default_taxonomy,
+        )
+        mark_disputed = st.checkbox(
+            "Mark as disputed / needs second reviewer",
+            value=False,
+        )
+        notes = st.text_area("Notes (optional)", value="", height=120)
+        submitted = st.form_submit_button(
+            "Save review",
+            type="primary",
+            use_container_width=True,
+        )
+
+    if submitted:
+        previous_labels = {
+            "adherence": sample.get("previous_adherence_label"),
+            "taxonomy": sample.get("previous_taxonomy_labels", []),
+        }
+        updated_labels = {
+            "adherence": final_adherence,
+            "taxonomy": final_taxonomy,
+        }
+
+        if mark_disputed:
+            action_type = "disputed"
+        elif previous_labels == updated_labels:
+            action_type = "approved"
+        else:
+            action_type = "corrected"
+
+        record = ReviewActionRecord(
+            sample_id=sample_id,
+            previous_labels=previous_labels,
+            updated_labels=updated_labels,
+            reviewer_id=str(st.session_state.reviewer_id).strip() or DEFAULT_REVIEWER,
+            action_type=action_type,
+            notes=notes,
+            source="streamlit-review-queue-v1",
+        )
+        ensure_dirs(review_log_path.parent)
+        append_jsonl(record.to_dict(), review_log_path)
+        st.success(f"Saved {action_type} review for `{sample_id}`")
+        st.session_state.review_idx = min(idx + 1, max(0, len(visible_queue) - 1))
         st.rerun()
 
-    # ── Navigation ───────────────────────────────────────────────────────
-    nav1, nav2, nav3 = st.columns(3)
-    with nav1:
-        if st.button("⬅️ Previous", disabled=(idx == 0)):
+    nav_col1, nav_col2, nav_col3 = st.columns(3)
+    with nav_col1:
+        if st.button("⬅️ Previous", disabled=(idx == 0), use_container_width=True):
             st.session_state.review_idx = max(0, idx - 1)
             st.rerun()
-    with nav2:
-        if st.button("⏭️ Skip"):
-            st.session_state.review_idx = idx + 1
+    with nav_col2:
+        if st.button("⏭️ Skip", use_container_width=True):
+            st.session_state.review_idx = min(idx + 1, len(visible_queue) - 1)
             st.rerun()
-    with nav3:
-        st.caption(f"Remaining: {len(pending) - idx}")
+    with nav_col3:
+        jump = st.number_input(
+            "Jump to #",
+            min_value=1,
+            max_value=len(visible_queue),
+            value=idx + 1,
+            step=1,
+            label_visibility="collapsed",
+        )
+        if st.button("Go", use_container_width=True):
+            st.session_state.review_idx = int(jump) - 1
+            st.rerun()
 
 
 if __name__ == "__main__":

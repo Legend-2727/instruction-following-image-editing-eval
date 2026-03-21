@@ -1,0 +1,41 @@
+version: 1
+
+canonical_source_language: en
+
+keep_original_columns:
+  - instruction_en
+  - instruction_bn
+  - instruction_hi
+  - instruction_ne
+
+new_translation_columns:
+  bn: instruction_bn_v2
+  hi: instruction_hi_v2
+  ne: instruction_ne_v2
+
+back_translation_columns:
+  bn: backtranslate_bn_to_en
+  hi: backtranslate_hi_to_en
+  ne: backtranslate_ne_to_en
+
+qa_columns:
+  - translation_model
+  - translation_source_text
+  - qa_method
+  - qa_score
+  - qa_flag
+  - qa_notes
+  - translation_status
+
+status_values:
+  - pending
+  - translated
+  - qa_pass
+  - qa_review
+  - qa_fail
+
+rules:
+  - never overwrite original instruction_bn/instruction_hi/instruction_ne
+  - always translate from instruction_en
+  - save one row per original sample id
+  - if qa is weak, mark qa_review or qa_fail

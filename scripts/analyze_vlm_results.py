@@ -33,7 +33,7 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from utils.io import load_jsonl, ensure_dirs
+from utils.io import load_metadata, load_jsonl, ensure_dirs, resolve_data_path
 from utils.schema import ADHERENCE_LABELS, ERROR_TYPES, VLMJudgment
 from utils.prompt_features import extract_prompt_features
 
@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 def load_data(data_dir: Path):
     """Load metadata + judgments into a merged DataFrame."""
-    meta = load_jsonl(data_dir / "metadata.jsonl")
+    meta = load_metadata(data_dir / "metadata.jsonl")
     judgments = load_jsonl(data_dir / "vlm_judgments.jsonl")
 
     meta_df = pd.DataFrame(meta)
@@ -187,9 +187,9 @@ def plot_failure_gallery(df: pd.DataFrame, data_dir: Path, out_dir: Path, k: int
         axes = axes.reshape(1, -1)
 
     for i, (_, row) in enumerate(samples.iterrows()):
-        orig_path = data_dir / row["orig_path"]
-        edit_path = data_dir / row["edited_path"]
-        gt_path = data_dir / row.get("gt_path", "")
+        orig_path = resolve_data_path(data_dir, row["orig_path"])
+        edit_path = resolve_data_path(data_dir, row["edited_path"])
+        gt_path = resolve_data_path(data_dir, row.get("gt_path", ""))
 
         # Original
         if orig_path.exists():
@@ -204,8 +204,8 @@ def plot_failure_gallery(df: pd.DataFrame, data_dir: Path, out_dir: Path, k: int
         axes[i, 1].axis("off")
 
         # Ground truth (if available)
-        if gt_path and Path(data_dir / gt_path).exists():
-            axes[i, 2].imshow(Image.open(data_dir / gt_path))
+        if row.get("gt_path") and gt_path.exists():
+            axes[i, 2].imshow(Image.open(gt_path))
             axes[i, 2].set_title("Ground Truth", fontsize=10)
         else:
             axes[i, 2].text(0.5, 0.5, "N/A", ha="center", va="center", fontsize=14)

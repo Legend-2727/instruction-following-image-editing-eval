@@ -1,0 +1,130 @@
+# annotation_schema.yaml
+# Canonical schema for the tri-input image-edit classifier annotation pipeline.
+# This defines inputs, label sets, judge outputs, and human review fields.
+
+version: "1.0"
+description: "Annotation schema for image-edit adherence and error-type classification"
+
+# ── Inputs ──────────────────────────────────────────────────────────────────
+inputs:
+  - id
+  - source_image
+  - edited_image
+  - instruction_en
+
+# ── Canonical label sets ────────────────────────────────────────────────────
+
+# Adherence: one-label classification (does the edit follow the instruction?)
+adherence_labels:
+  - "Success"      # edit fully and correctly follows the instruction
+  - "Partial"      # edit follows instruction but has issues or partial coverage
+  - "No"           # edit does not follow instruction or fails completely
+
+# Taxonomy: multi-label classification (what kinds of errors occurred?)
+# 11-class fixed order (must match scripts/utils/schema.py)
+taxonomy_labels:
+  - "Wrong Object"           # edited wrong object or replaced with wrong object
+  - "Missing Object"         # should have edited/added object, but missing
+  - "Extra Object"           # added unintended extra object
+  - "Wrong Attribute"        # edited color/pose/style incorrectly
+  - "Spatial Error"          # object in wrong location/orientation
+  - "Style Mismatch"         # edit style inconsistent with scene
+  - "Over-editing"           # edited beyond what instruction asked
+  - "Under-editing"          # did not edit enough; incomplete
+  - "Artifact / Quality Issue" # blur, distortion, artifact, color shift
+  - "Ambiguous Prompt"       # instruction was unclear; hard to judge
+  - "Failed Removal"         # attempted removal did not work fully
+
+# ── Judge outputs (candidate labels from LLM judges) ──────────────────────
+judge_output_fields:
+  judge_a_adherence:
+    type: string
+    enum: ["Success", "Partial", "No"]
+    description: "Judge A's adherence prediction"
+  
+  judge_a_taxonomy:
+    type: array
+    items: string
+    description: "Judge A's taxonomy error labels (may be empty)"
+  
+  judge_b_adherence:
+    type: string
+    enum: ["Success", "Partial", "No"]
+    description: "Judge B's adherence prediction (optional)"
+  
+  judge_b_taxonomy:
+    type: array
+    items: string
+    description: "Judge B's taxonomy error labels (may be empty)"
+  
+  judge_agreement:
+    type: boolean
+    description: "Do judge A and B agree on adherence?"
+  
+  judge_confidence:
+    type: number
+    minimum: 0.0
+    maximum: 1.0
+    description: "Judge A's confidence in its prediction (0.0 to 1.0)"
+  
+  auto_accept_candidate:
+    type: boolean
+    description: "Should this be auto-accepted without human review? (high confidence + agreement)"
+
+# ── Human review fields (gold labels after review) ──────────────────────────
+human_review_fields:
+  final_adherence:
+    type: string
+    enum: ["Success", "Partial", "No"]
+    description: "Reviewed and corrected adherence label"
+  
+  final_taxonomy:
+    type: array
+    items: string
+    description: "Reviewed and corrected taxonomy error labels"
+  
+  review_status:
+    type: string
+    enum: ["pending", "reviewed", "approved", "disputed"]
+    description: "Status of human review"
+  
+  reviewer_id:
+    type: string
+    description: "ID or name of the human reviewer"
+  
+  reviewed_at:
+    type: string
+    format: "date-time"
+    description: "Timestamp when review was completed (ISO 8601)"
+  
+  notes:
+    type: string
+    description: "Optional reviewer notes or explanation of changes"
+
+# ── Output dataset record structure ─────────────────────────────────────────
+# After merging reviews, each sample row will contain:
+# - inputs: id, source_image, edited_image, instruction_en
+# - candidate labels: judge_a_*, judge_b_*, judge_agreement, judge_confidence, auto_accept_candidate
+# - final gold labels: final_adherence, final_taxonomy, review_status, reviewer_id, reviewed_at, notes
+
+merged_dataset_record:
+  description: "A sample record after merging judge outputs and human reviews"
+  required_fields:
+    - id
+    - source_image
+    - edited_image
+    - instruction_en
+    - final_adherence
+    - final_taxonomy
+    - review_status
+  optional_fields:
+    - judge_a_adherence
+    - judge_a_taxonomy
+    - judge_b_adherence
+    - judge_b_taxonomy
+    - judge_agreement
+    - judge_confidence
+    - auto_accept_candidate
+    - reviewer_id
+    - reviewed_at
+    - notes

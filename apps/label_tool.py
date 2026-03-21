@@ -28,7 +28,7 @@ import streamlit as st
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
-from utils.io import load_jsonl, append_jsonl, ensure_dirs
+from utils.io import load_metadata, load_jsonl, append_jsonl, ensure_dirs, resolve_data_path
 from utils.schema import ADHERENCE_LABELS, ERROR_TYPES, LabelRecord
 
 # ── Paths ────────────────────────────────────────────────────────────────────
@@ -48,7 +48,7 @@ def _init_state() -> None:
     data_dir_str = st.query_params.get("data", str(DEFAULT_DATA_DIR))
     data_dir = Path(data_dir_str)
     meta_path = data_dir / "metadata.jsonl"
-    meta = load_jsonl(meta_path)
+    meta = load_metadata(meta_path)
     if not meta:
         st.error(f"No metadata found at `{meta_path}`. Run `make_sample_dataset.py` first.")
         st.stop()
@@ -115,8 +115,8 @@ def main() -> None:
 
     # Images side by side
     col1, col2 = st.columns(2)
-    orig_path = data_dir / rec["orig_path"]
-    edit_path = data_dir / rec["edited_path"]
+    orig_path = resolve_data_path(data_dir, rec["orig_path"])
+    edit_path = resolve_data_path(data_dir, rec["edited_path"])
 
     with col1:
         st.subheader("Original")

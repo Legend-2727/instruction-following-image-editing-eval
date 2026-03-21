@@ -11,21 +11,15 @@ huggingface_hub>=0.16
 transformers>=4.45.0
 accelerate>=0.26
 
-# ── CLIP embeddings ──────────────────────────────────────────────────────────
+# ── CLIP embeddings (Checkpoint 1) ───────────────────────────────────────────
 open_clip_torch>=2.20
 
-# ── Image editing model ─────────────────────────────────────────────────────
+# ── Image editing model (Checkpoint 2) ───────────────────────────────────────
 diffusers>=0.25.0
 
-# ── VLM-as-judge (Qwen2.5-VL) ───────────────────────────────────────────────
+# ── VLM-as-judge (Checkpoint 2) ──────────────────────────────────────────────
 qwen-vl-utils>=0.0.8
-
-# ── Translation (NLLB-200) ───────────────────────────────────────────────────
-sentencepiece>=0.1.99
-protobuf>=3.20
-
-# ── Vision models ────────────────────────────────────────────────────────────
-timm>=0.9.0
+# autoawq>=0.2.0  # Linux-only (triton dependency); use full-precision 3B model on Windows
 
 # ── ML / evaluation ─────────────────────────────────────────────────────────
 scikit-learn>=1.3
@@ -37,8 +31,8 @@ matplotlib>=3.7
 seaborn>=0.12
 pyyaml>=6.0
 
-# ── Web UI (human review) ───────────────────────────────────────────────────
-gradio>=4.0
+# ── Web UI ───────────────────────────────────────────────────────────────────
+streamlit>=1.28
 
 # ── Misc ─────────────────────────────────────────────────────────────────────
 requests>=2.28

@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Review Record Schema",
+  "description": "Append-only log entry for human review of a classifier sample. Each review action creates one new record; does not overwrite raw judge outputs.",
+  "type": "object",
+  "required": [
+    "sample_id",
+    "previous_labels",
+    "updated_labels",
+    "reviewer_id",
+    "timestamp_utc",
+    "action_type"
+  ],
+  "properties": {
+    "sample_id": {
+      "type": "string",
+      "description": "Unique identifier of the sample being reviewed (e.g., '85160_3')"
+    },
+    "previous_labels": {
+      "type": "object",
+      "description": "Labels before this review action",
+      "properties": {
+        "adherence": {
+          "type": "string",
+          "enum": ["Success", "Partial", "No"]
+        },
+        "taxonomy": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Previous taxonomy error labels"
+        }
+      },
+      "required": ["adherence", "taxonomy"]
+    },
+    "updated_labels": {
+      "type": "object",
+      "description": "Labels after this review action",
+      "properties": {
+        "adherence": {
+          "type": "string",
+          "enum": ["Success", "Partial", "No"]
+        },
+        "taxonomy": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Updated taxonomy error labels"
+        }
+      },
+      "required": ["adherence", "taxonomy"]
+    },
+    "reviewer_id": {
+      "type": "string",
+      "description": "ID or name of the human reviewer (e.g., 'reviewer_001', 'alice@example.com')"
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp when review was completed"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": ["corrected", "approved", "disputed"],
+      "description": "Type of action: 'corrected' (changed labels), 'approved' (agreed with judge), 'disputed' (marked for further review)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional reviewer notes (e.g., 'Image quality too low', 'Instruction ambiguous')"
+    },
+    "source": {
+      "type": "string",
+      "description": "Optional: where the review came from (e.g., 'hf-space-v1', 'gradio-app')"
+    }
+  },
+  "additionalProperties": false
+}

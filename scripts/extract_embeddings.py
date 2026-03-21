@@ -23,7 +23,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from utils.io import load_metadata
+from utils.io import load_metadata, resolve_data_path
 from utils.clip_encoder import CLIPEmbedder
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(message)s")
@@ -51,8 +51,8 @@ def main() -> None:
     logger.info("Loaded %d metadata records.", len(meta))
 
     ids = [m["id"] for m in meta]
-    orig_paths = [str(data_dir / m["orig_path"]) for m in meta]
-    edit_paths = [str(data_dir / m["edited_path"]) for m in meta]
+    orig_paths = [str(resolve_data_path(data_dir, m["orig_path"])) for m in meta]
+    edit_paths = [str(resolve_data_path(data_dir, m["edited_path"])) for m in meta]
     prompts = [m["prompt"] for m in meta]
 
     # Build embeddings

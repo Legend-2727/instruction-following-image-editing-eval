@@ -1,0 +1,178 @@
+{
+  "editable_fields": [
+    {
+      "field_name": "final_adherence",
+      "display_name": "Adherence Label",
+      "description": "Does the edited image follow the instruction? Select one.",
+      "type": "enum",
+      "required": true,
+      "enum_values": [
+        {
+          "value": "Success",
+          "label": "Success",
+          "description": "Edit fully and correctly follows the instruction."
+        },
+        {
+          "value": "Partial",
+          "label": "Partial",
+          "description": "Edit follows instruction but has issues, incomplete coverage, or minor errors."
+        },
+        {
+          "value": "No",
+          "label": "No",
+          "description": "Edit does not follow instruction, is completely wrong, or failed."
+        }
+      ]
+    },
+    {
+      "field_name": "final_taxonomy",
+      "display_name": "Error Types",
+      "description": "Select all error types that appear in the edited image (leave empty if Success).",
+      "type": "multi_select",
+      "required": false,
+      "enum_values": [
+        {
+          "value": "Wrong Object",
+          "label": "Wrong Object",
+          "description": "Wrong object was edited or replaced with the wrong object."
+        },
+        {
+          "value": "Missing Object",
+          "label": "Missing Object",
+          "description": "Object that should have been added or edited is missing."
+        },
+        {
+          "value": "Extra Object",
+          "label": "Extra Object",
+          "description": "Unwanted extra objects were added."
+        },
+        {
+          "value": "Wrong Attribute",
+          "label": "Wrong Attribute",
+          "description": "Color, shape, size, pose, or style attribute is incorrect."
+        },
+        {
+          "value": "Spatial Error",
+          "label": "Spatial Error",
+          "description": "Object placement, orientation, or spatial arrangement is wrong."
+        },
+        {
+          "value": "Style Mismatch",
+          "label": "Style Mismatch",
+          "description": "Edit style (artistic, lighting, texture) doesn't match the original scene."
+        },
+        {
+          "value": "Over-editing",
+          "label": "Over-editing",
+          "description": "More changes were made than the instruction requested."
+        },
+        {
+          "value": "Under-editing",
+          "label": "Under-editing",
+          "description": "Changes are incomplete or too subtle for what was requested."
+        },
+        {
+          "value": "Artifact / Quality Issue",
+          "label": "Artifact / Quality Issue",
+          "description": "Visual artifacts, blur, distortion, color shift, or quality degradation."
+        },
+        {
+          "value": "Ambiguous Prompt",
+          "label": "Ambiguous Prompt",
+          "description": "The instruction itself is unclear or contradictory."
+        },
+        {
+          "value": "Failed Removal",
+          "label": "Failed Removal",
+          "description": "Object that should be removed is still present."
+        }
+      ]
+    },
+    {
+      "field_name": "notes",
+      "display_name": "Reviewer Notes",
+      "description": "Optional explanation of your changes or observations.",
+      "type": "text",
+      "required": false,
+      "max_length": 500,
+      "placeholder": "e.g., 'Judge said No but edit mostly follows instruction. Man has suit but off-center.'"
+    }
+  ],
+  "read_only_sections": [
+    {
+      "section_name": "Display Information",
+      "fields": [
+        "id",
+        "source_image",
+        "edited_image",
+        "instruction_en",
+        "original_adherence_label",
+        "original_taxonomy_labels"
+      ]
+    },
+    {
+      "section_name": "Judge Predictions",
+      "fields": [
+        "judge_a_adherence",
+        "judge_a_taxonomy",
+        "judge_a_confidence",
+        "judge_a_raw",
+        "judge_b_adherence",
+        "judge_b_taxonomy",
+        "judge_b_confidence",
+        "judge_b_raw",
+        "adherence_agreement",
+        "taxonomy_agreement",
+        "overall_agreement",
+        "mean_confidence"
+      ]
+    }
+  ],
+  "validation_rules": {
+    "final_adherence": {
+      "rule": "enum",
+      "values": ["Success", "Partial", "No"],
+      "message": "Adherence must be Success, Partial, or No."
+    },
+    "final_taxonomy": {
+      "rule": "multi_select_from_enum",
+      "enum": [
+        "Wrong Object",
+        "Missing Object",
+        "Extra Object",
+        "Wrong Attribute",
+        "Spatial Error",
+        "Style Mismatch",
+        "Over-editing",
+        "Under-editing",
+        "Artifact / Quality Issue",
+        "Ambiguous Prompt",
+        "Failed Removal"
+      ],
+      "max_selections": 11,
+      "message": "Each error type can only be selected once."
+    },
+    "notes": {
+      "rule": "text_length",
+      "min_length": 0,
+      "max_length": 500,
+      "message": "Notes must be 500 characters or fewer."
+    }
+  },
+  "submission_format": {
+    "sample_id": "string (from input)",
+    "previous_labels": {
+      "adherence": "string (from original_adherence_label)",
+      "taxonomy": "array (from original_taxonomy_labels)"
+    },
+    "updated_labels": {
+      "adherence": "string (final_adherence, required)",
+      "taxonomy": "array (final_taxonomy, may be empty)"
+    },
+    "reviewer_id": "string (HF username or custom ID, auto-filled)",
+    "timestamp_utc": "string (ISO 8601, auto-generated)",
+    "action_type": "string (auto-set: 'corrected' if change, 'approved' if no change)",
+    "notes": "string (optional, from notes field)",
+    "source": "string (auto-set: 'hf-space-v1')"
+  }
+}

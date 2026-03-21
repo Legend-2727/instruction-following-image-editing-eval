@@ -7,6 +7,9 @@ import os
 from pathlib import Path
 from typing import List, Dict, Any, Union
 
+
+METADATA_PATH_KEYS = {"orig_path", "edited_path", "gt_path", "source_path", "target_path"}
+
 from PIL import Image
 
 
@@ -15,6 +18,28 @@ def ensure_dirs(*paths: Union[str, Path]) -> None:
     """Create directories (including parents) if they don't exist."""
     for p in paths:
         os.makedirs(str(p), exist_ok=True)
+
+
+
+
+# ── Path helpers ─────────────────────────────────────────────────────────────
+def normalize_relpath(path: Union[str, Path]) -> str:
+    """Normalize metadata-style relative paths to POSIX separators."""
+    return str(path).replace('\\', '/').replace('\\\\', '/').lstrip('./')
+
+
+def resolve_data_path(root: Union[str, Path], rel_path: Union[str, Path]) -> Path:
+    """Join *root* with a metadata path after separator normalization."""
+    return Path(root) / Path(normalize_relpath(rel_path))
+
+
+def normalize_metadata_record(record: Dict[str, Any]) -> Dict[str, Any]:
+    """Return a shallow copy with any known path fields normalized."""
+    out = dict(record)
+    for key in METADATA_PATH_KEYS:
+        if key in out and isinstance(out[key], (str, Path)):
+            out[key] = normalize_relpath(out[key])
+    return out
 
 
 # ── JSONL helpers ────────────────────────────────────────────────────────────
@@ -51,8 +76,8 @@ def append_jsonl(record: Dict[str, Any], path: Union[str, Path]) -> None:
 
 # ── Metadata / label convenience wrappers ────────────────────────────────────
 def load_metadata(path: Union[str, Path]) -> List[Dict[str, Any]]:
-    """Load metadata.jsonl."""
-    return load_jsonl(path)
+    """Load metadata.jsonl with normalized relative image paths."""
+    return [normalize_metadata_record(r) for r in load_jsonl(path)]
 
 
 def save_metadata(records: List[Dict[str, Any]], path: Union[str, Path]) -> None:

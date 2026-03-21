@@ -29,7 +29,7 @@ from tqdm import tqdm
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from utils.io import load_jsonl, append_jsonl, ensure_dirs
+from utils.io import load_metadata, load_jsonl, append_jsonl, ensure_dirs, resolve_data_path
 from utils.schema import VLMJudgment
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(message)s")
@@ -47,7 +47,7 @@ def run_judgments(
     from utils.vlm_evaluator import QwenVLMJudge
 
     meta_path = data_dir / "metadata.jsonl"
-    metadata = load_jsonl(meta_path)
+    metadata = load_metadata(meta_path)
     if not metadata:
         logger.error("No metadata found at %s", meta_path)
         sys.exit(1)
@@ -76,8 +76,8 @@ def run_judgments(
     for meta in tqdm(todo, desc="VLM judging"):
         uid = meta["id"]
         prompt = meta["prompt"]
-        orig_path = data_dir / meta["orig_path"]
-        edit_path = data_dir / meta["edited_path"]
+        orig_path = resolve_data_path(data_dir, meta["orig_path"])
+        edit_path = resolve_data_path(data_dir, meta["edited_path"])
 
         if not orig_path.exists() or not edit_path.exists():
             logger.warning("Missing images for %s — skipping", uid)

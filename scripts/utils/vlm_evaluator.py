@@ -26,51 +26,112 @@ logger = logging.getLogger(__name__)
 
 
 # ── System & user prompt templates ───────────────────────────────────────────
-_SYSTEM_PROMPT = """\
-You are an expert image editing evaluator. You will be given:
-1. An ORIGINAL image (first image)
-2. An EDITED image (second image)
-3. An edit INSTRUCTION that was supposed to be applied
+_SYSTEM_PROMPT_CONSERVATIVE = """\
+You are an expert evaluator of instruction-following image edits.
 
-Your task: evaluate whether the edit instruction was correctly followed.
+You will be given:
+1. The ORIGINAL image
+2. The EDITED image
+3. The edit INSTRUCTION
 
-You MUST respond with ONLY valid JSON (no markdown fences, no extra text):
+Return ONLY valid JSON.
+Do not include markdown.
+Do not include explanation outside JSON.
+Do not include any prose before or after the JSON.
+
+Schema:
 {
-  "adherence": "<Success|Partial|No>",
+  "adherence": "Success" | "Partial" | "No",
   "error_types": ["<error1>", "<error2>"],
-  "reasoning": "<1-2 sentence explanation>",
-  "confidence": <0.0 to 1.0>
+  "confidence": <float between 0.0 and 1.0>
 }
 
-Adherence values:
-- "Success": The edit fully matches the instruction
-- "Partial": The edit partially follows the instruction but has issues
-- "No": The edit does not follow the instruction at all
+Rules:
+- If the instruction is fully satisfied, use "Success" and [].
+- If the instruction is partly satisfied, use "Partial".
+- If the requested change is absent or clearly failed, use "No".
+- Use at most 2 error types unless absolutely necessary.
+- Prefer "Under-editing" when the requested edit is missing or too weak.
+- Use "Wrong Attribute" only when the requested change is present but wrong.
+- Use "Spatial Error" only when position / pose / placement is clearly wrong.
+- Use "Artifact / Quality Issue" only for visible distortion, blur, or artifacts.
+- If adherence is "Success", error_types must be [].
 
-Error types (pick ALL that apply, or empty list if Success):
-- "Wrong Object": Wrong object was modified
-- "Missing Object": An object that should be added/present is missing
-- "Extra Object": Unwanted objects were added
-- "Wrong Attribute": Color/shape/size is wrong
-- "Spatial Error": Spatial placement is wrong
-- "Style Mismatch": Art style or visual style doesn't match
-- "Over-editing": Too many changes beyond what was requested
-- "Under-editing": Changes are too subtle or incomplete
-- "Artifact / Quality Issue": Visual artifacts, blurriness, distortion
-- "Ambiguous Prompt": The instruction itself is unclear
-- "Failed Removal": Object that should be removed is still there
+Allowed error_types:
+[
+  "Wrong Object",
+  "Missing Object",
+  "Extra Object",
+  "Wrong Attribute",
+  "Spatial Error",
+  "Style Mismatch",
+  "Over-editing",
+  "Under-editing",
+  "Artifact / Quality Issue",
+  "Ambiguous Prompt",
+  "Failed Removal"
+]
+"""
+
+_SYSTEM_PROMPT_FAILURE_FOCUSED = """\
+You are an expert evaluator of instruction-following image edits.
+
+You will be given:
+1. The ORIGINAL image
+2. The EDITED image
+3. The edit INSTRUCTION
+
+Return ONLY valid JSON.
+Do not include markdown.
+Do not include explanation outside JSON.
+Do not include any prose before or after the JSON.
+
+Schema:
+{
+  "adherence": "Success" | "Partial" | "No",
+  "error_types": ["<error1>", "<error2>"],
+  "confidence": <float between 0.0 and 1.0>
+}
+
+Rules:
+- Be slightly stricter than a normal evaluator.
+- Look carefully for missing, weak, or incorrect edits.
+- Use at most 2 error types unless absolutely necessary.
+- Prefer "Under-editing" when the requested edit is missing or incomplete.
+- Use "Wrong Attribute" only when the edited property is clearly wrong.
+- Use "Spatial Error" only when location / pose / placement is clearly wrong.
+- Use "Artifact / Quality Issue" only when visible visual corruption is present.
+- If adherence is "Success", error_types must be [].
+
+Allowed error_types:
+[
+  "Wrong Object",
+  "Missing Object",
+  "Extra Object",
+  "Wrong Attribute",
+  "Spatial Error",
+  "Style Mismatch",
+  "Over-editing",
+  "Under-editing",
+  "Artifact / Quality Issue",
+  "Ambiguous Prompt",
+  "Failed Removal"
+]
 """
 
 _USER_TEMPLATE = """\
-The edit instruction was: "{instruction}"
+Instruction: "{instruction}"
 
-Evaluate whether the edited image (second image) correctly follows this instruction compared to the original image (first image).
+Evaluate whether the EDITED image follows the instruction relative to the ORIGINAL image.
 
-Respond with ONLY valid JSON."""
+Return ONLY valid JSON matching the schema."""
 
 
 class QwenVLMJudge:
-    """Wrapper for Qwen2.5-VL as an automated edit quality judge."""
+    """Wrapper for Qwen2.5-VL as an automated edit quality judge.
+    
+    Enforces strict JSON output with auditable failure tracking.
+    """
 
     def __init__(
         self,
@@ -80,10 +141,16 @@ class QwenVLMJudge:
         max_new_tokens: int = 512,
         min_pixels: int = 256 * 28 * 28,
         max_pixels: int = 1280 * 28 * 28,
+        prompt_type: str = "conservative",
     ):
+        """Initialize the VLM judge.
+        
+        Args:
+            prompt_type: 'conservative' (minimal labels) or 'failure_focused' (stricter).
+        """
         from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
 
-        logger.info("Loading VLM judge: %s", model_id)
+        logger.info("Loading VLM judge: %s (prompt_type=%s)", model_id, prompt_type)
 
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             model_id,
@@ -99,6 +166,13 @@ class QwenVLMJudge:
         self.max_new_tokens = max_new_tokens
         self.model_id = model_id
         self.device = device
+        self.prompt_type = prompt_type.lower()
+        
+        # Select system prompt based on type
+        if self.prompt_type == "failure_focused":
+            self.system_prompt = _SYSTEM_PROMPT_FAILURE_FOCUSED
+        else:
+            self.system_prompt = _SYSTEM_PROMPT_CONSERVATIVE
 
         logger.info("VLM judge loaded successfully")
 
@@ -108,10 +182,10 @@ class QwenVLMJudge:
         edited_image: Image.Image,
         instruction: str,
     ) -> dict:
-        """Judge an edit and return a dict suitable for VLMJudgment.from_dict().
+        """Judge an edit and return a dict with strict JSON parsing.
 
-        Returns dict with keys: adherence, error_types, reasoning,
-        confidence, raw_response, model_name.
+        Returns dict with keys: adherence, error_types, confidence,
+        raw_response, model_name, parse_failed.
         """
         from qwen_vl_utils import process_vision_info
 
@@ -119,7 +193,7 @@ class QwenVLMJudge:
         edited_image = edited_image.convert("RGB")
 
         messages = [
-            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "system", "content": self.system_prompt},
             {
                 "role": "user",
                 "content": [
@@ -167,20 +241,28 @@ class QwenVLMJudge:
         parsed["model_name"] = self.model_id
         return parsed
 
-    # ── Response parsing ─────────────────────────────────────────────────
+    # ── Response parsing with strict validation ────────────────────────────────
     @staticmethod
     def _parse_response(raw: str) -> dict:
-        """Parse the VLM JSON response with fallback regex extraction."""
-        from scripts.utils.schema import ADHERENCE_LABELS, ERROR_TYPES
+        """Parse VLM response with strict JSON validation.
+        
+        Rules:
+        - Attempt JSON parse (strips markdown code fences)
+        - Validate adherence, error_types, confidence against canonical schema
+        - Apply normalization: Success -> empty taxonomy, No + empty -> Under-editing
+        - On parse failure, return dict with parse_failed=True and no fabricated labels
+        """
+        from utils.schema import ADHERENCE_LABELS, ERROR_TYPES, ADHERENCE_TO_IDX, ERROR_TO_IDX
 
+        # Result template
         result = {
-            "adherence": "No",
+            "adherence": None,
             "error_types": [],
-            "reasoning": "",
-            "confidence": 0.0,
+            "confidence": None,
+            "parse_failed": True,
         }
 
-        # Try direct JSON parse
+        # Attempt JSON parse
         try:
             # Strip markdown code fences if present
             cleaned = raw.strip()
@@ -188,62 +270,65 @@ class QwenVLMJudge:
             cleaned = re.sub(r"\s*```$", "", cleaned)
             data = json.loads(cleaned)
 
-            if isinstance(data, dict):
-                # Adherence
-                adh = data.get("adherence", "No")
-                if adh in ADHERENCE_LABELS:
-                    result["adherence"] = adh
-                elif isinstance(adh, str):
-                    # Fuzzy match
-                    adh_lower = adh.lower().strip()
-                    for label in ADHERENCE_LABELS:
-                        if label.lower() in adh_lower:
-                            result["adherence"] = label
-                            break
+            # Validate adherence
+            adh = data.get("adherence", None)
+            if adh not in ADHERENCE_LABELS:
+                logger.warning("Invalid adherence value: %r. Expected one of %s", adh, ADHERENCE_LABELS)
+                return result  # parse_failed=True
 
-                # Error types
-                raw_errors = data.get("error_types", [])
-                if isinstance(raw_errors, list):
-                    matched = []
-                    for e in raw_errors:
-                        if e in ERROR_TYPES:
-                            matched.append(e)
-                        elif isinstance(e, str):
-                            # Fuzzy: check substring match
-                            e_lower = e.lower()
-                            for et in ERROR_TYPES:
-                                if et.lower() in e_lower or e_lower in et.lower():
-                                    matched.append(et)
-                                    break
-                    result["error_types"] = matched
-
-                result["reasoning"] = str(data.get("reasoning", ""))
-
-                conf = data.get("confidence", 0.0)
-                try:
-                    result["confidence"] = float(conf)
-                except (ValueError, TypeError):
-                    result["confidence"] = 0.0
-
+            # Validate error_types
+            raw_errors = data.get("error_types", [])
+            if not isinstance(raw_errors, list):
+                logger.warning("error_types is not a list: %r", raw_errors)
                 return result
 
-        except (json.JSONDecodeError, ValueError):
-            pass
+            validated_errors = []
+            for error in raw_errors:
+                if error not in ERROR_TYPES:
+                    logger.warning("Unknown error type: %r. Valid: %s", error, ERROR_TYPES)
+                    return result  # Strict: any invalid error -> parse failure
+                validated_errors.append(error)
 
-        # Fallback: regex extraction from raw text
-        logger.warning("JSON parse failed, using regex fallback for: %s", raw[:200])
+            # Validate confidence
+            conf = data.get("confidence", None)
+            try:
+                conf = float(conf)
+                if not (0.0 <= conf <= 1.0):
+                    logger.warning("Confidence out of range [0.0, 1.0]: %f", conf)
+                    return result
+            except (ValueError, TypeError):
+                logger.warning("Invalid confidence value: %r", conf)
+                return result
 
-        for label in ADHERENCE_LABELS:
-            if label.lower() in raw.lower():
-                result["adherence"] = label
-                break
+            # ── Successful validation; apply normalization rules ──────────────
+            # Rule 1: If Success, error_types must be empty
+            if adh == "Success":
+                validated_errors = []
+            
+            # Rule 2: Deduplicate and maintain canonical order
+            validated_errors = sorted(
+                list(set(validated_errors)),
+                key=lambda e: ERROR_TO_IDX.get(e, 999)
+            )
+            
+            # Rule 3: Cap at 2 error types unless rare edge case
+            if len(validated_errors) > 2:
+                logger.warning("More than 2 error types; capping to 2: %s", validated_errors)
+                validated_errors = validated_errors[:2]
+            
+            # Rule 4: If No + empty taxonomy, assign Under-editing
+            if adh == "No" and len(validated_errors) == 0:
+                validated_errors = ["Under-editing"]
 
-        for et in ERROR_TYPES:
-            if et.lower() in raw.lower():
-                result["error_types"].append(et)
+            result["adherence"] = adh
+            result["error_types"] = validated_errors
+            result["confidence"] = conf
+            result["parse_failed"] = False
+            return result
 
-        result["reasoning"] = raw[:200]
-        return result
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.warning("JSON parse failed: %s. Raw: %s", e, raw[:200])
+            return result  # parse_failed=True, no fabricated labels
 
     def unload(self):
         """Free GPU memory."""
