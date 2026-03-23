@@ -20,3 +20,12 @@ Thumbs.db
 
 # Notebooks
 .ipynb_checkpoints/
+
+# Data and Runtime files
+cloudflared
+cloudflared.log
+logs/
+runs/
+artifacts/
+data/hf_snapshots/
+data/splits/*.db
