@@ -17,6 +17,7 @@ from __future__ import annotations
 # Streamlit should be imported before other third-party imports.
 import streamlit as st
 
+import json
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
@@ -69,7 +70,70 @@ def _format_label_bundle(adherence: Any, taxonomy: Any) -> str:
         tax = ", ".join(taxonomy) if taxonomy else "None"
     else:
         tax = str(taxonomy or "None")
-    return f"**Adherence:** {adh}  \\n**Taxonomy:** {tax}"
+    return f"Adherence: {adh}\nTaxonomy: {tax}"
+
+
+def _candidate_data_roots(data_dir: Path) -> List[Path]:
+    roots: List[Path] = [data_dir, PROJECT_ROOT]
+
+    snapshots_root = PROJECT_ROOT / "data" / "hf_snapshots"
+    default_snapshot = snapshots_root / "xlingual_picobanana_full"
+    if default_snapshot.exists():
+        roots.append(default_snapshot)
+
+    if snapshots_root.exists():
+        for child in snapshots_root.iterdir():
+            if child.is_dir():
+                roots.append(child)
+
+    # Preserve order while removing duplicates.
+    unique_roots: List[Path] = []
+    seen = set()
+    for root in roots:
+        key = str(root.resolve())
+        if key not in seen:
+            seen.add(key)
+            unique_roots.append(root)
+    return unique_roots
+
+
+def _resolve_image_for_display(data_dir: Path, rel_path: Any) -> Path:
+    rel = str(rel_path or "").strip()
+    if not rel:
+        return Path("")
+
+    for root in _candidate_data_roots(data_dir):
+        candidate = resolve_data_path(root, rel)
+        if candidate.exists():
+            return candidate
+
+    # Fall back to the direct resolution so warning paths remain interpretable.
+    return resolve_data_path(data_dir, rel)
+
+
+def _format_judge_notes(raw_text: Any) -> str:
+    raw = str(raw_text or "").strip()
+    if not raw:
+        return ""
+
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return raw
+
+    adherence = parsed.get("adherence", "—")
+    taxonomy = parsed.get("error_types", [])
+    confidence = parsed.get("confidence", "—")
+    if isinstance(taxonomy, list):
+        taxonomy_text = ", ".join(taxonomy) if taxonomy else "None"
+    else:
+        taxonomy_text = str(taxonomy)
+
+    return (
+        f"Adherence: {adherence}\n"
+        f"Taxonomy: {taxonomy_text}\n"
+        f"Confidence: {confidence}"
+    )
 
 
 
@@ -173,8 +237,8 @@ def main() -> None:
     sample_id = str(sample.get("id", ""))
     latest_review = latest_reviews.get(sample_id)
 
-    source_image = resolve_data_path(data_dir, sample.get("source_image", ""))
-    edited_image = resolve_data_path(data_dir, sample.get("edited_image", ""))
+    source_image = _resolve_image_for_display(data_dir, sample.get("source_image", ""))
+    edited_image = _resolve_image_for_display(data_dir, sample.get("edited_image", ""))
 
     st.markdown(f"### Sample {idx + 1} / {len(visible_queue)} — `{sample_id}`")
     meta_cols = st.columns(4)
@@ -202,7 +266,7 @@ def main() -> None:
 
     with info_col1:
         st.markdown("**Original / existing labels**")
-        st.markdown(
+        st.text(
             _format_label_bundle(
                 sample.get("original_adherence_label"),
                 sample.get("original_taxonomy_labels", []),
@@ -211,7 +275,7 @@ def main() -> None:
         if sample.get("original_label_source"):
             st.caption(f"Source: {sample.get('original_label_source')}")
         st.markdown("**Current provisional labels**")
-        st.markdown(
+        st.text(
             _format_label_bundle(
                 sample.get("previous_adherence_label"),
                 sample.get("previous_taxonomy_labels", []),
@@ -224,29 +288,29 @@ def main() -> None:
 
     with info_col2:
         st.markdown("**Judge A**")
-        st.markdown(
+        st.text(
             _format_label_bundle(
                 sample.get("judge_a_adherence"),
                 sample.get("judge_a_taxonomy", []),
             )
         )
         st.caption(f"Confidence: {float(sample.get('judge_a_confidence', 0.0) or 0.0):.2f}")
-        raw_a = str(sample.get("judge_a_raw", "")).strip()
-        if raw_a:
-            st.text_area("Judge A notes", value=raw_a, height=120, disabled=True)
+        notes_a = _format_judge_notes(sample.get("judge_a_raw", ""))
+        if notes_a:
+            st.text_area("Judge A notes", value=notes_a, height=120, disabled=True)
 
     with info_col3:
         st.markdown("**Judge B**")
-        st.markdown(
+        st.text(
             _format_label_bundle(
                 sample.get("judge_b_adherence"),
                 sample.get("judge_b_taxonomy", []),
             )
         )
         st.caption(f"Confidence: {float(sample.get('judge_b_confidence', 0.0) or 0.0):.2f}")
-        raw_b = str(sample.get("judge_b_raw", "")).strip()
-        if raw_b:
-            st.text_area("Judge B notes", value=raw_b, height=120, disabled=True)
+        notes_b = _format_judge_notes(sample.get("judge_b_raw", ""))
+        if notes_b:
+            st.text_area("Judge B notes", value=notes_b, height=120, disabled=True)
 
     if latest_review:
         st.markdown("---")

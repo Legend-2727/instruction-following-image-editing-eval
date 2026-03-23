@@ -108,6 +108,20 @@ def choose_provisional_labels(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 
 def extract_existing_labels(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """Extract baseline human/original labels if present on a record."""
+    
+    # Handle the raw dataset's source_type annotation directly:
+    source_type = row.get("source_type")
+    if source_type in ("sft", "preference_rejected", "baseline_good"):
+        if source_type in ("sft", "baseline_good"):
+            adherence = "Success"
+        else:
+            adherence = "Partial/No" # Cannot differentiate Partial vs No from preference_rejected alone
+        return {
+            "adherence": adherence,
+            "taxonomy": [],
+            "source": f"raw_dataset ({source_type})",
+        }
+
     candidates: List[Tuple[str, str, str]] = [
         ("adherence_label", "taxonomy_labels", "existing_dataset_label"),
         ("final_adherence", "final_taxonomy", "existing_final_label"),

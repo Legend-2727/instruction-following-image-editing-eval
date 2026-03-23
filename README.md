@@ -21,6 +21,16 @@ Target outcome:
 - Verified labels (dual judge + human corrections)
 - Reproducible experiments and paper-ready analysis
 
+## Pilot Findings: The Failure of Open-Source VLMs
+During the pilot human-review phase (100 samples run through dual-judge Qwen2.5-VL), we discovered a critical flaw in relying purely on open-source VLMs for evaluation: **While they can somewhat gauge overall adherence (Success vs Partial vs No), they fundamentally fail to accurately generate granular error taxonomies.**
+
+They hallucinate wrong errors, misclassify "Under-editing" vs "Wrong Object", and lack the visual reasoning nuance needed for the complex 11-category taxonomy established by the original dataset.
+
+This serious issue explicitly blocks the use of entirely automated zero-shot VLM pipelines for fine-grained image editing evaluation, proving the necessity of:
+1. **The Human-in-the-Loop Review UI** to capture true ground-truth error labels.
+2. **The resulting Multilingual Student Classifier (Stage 4)**, which will learn from explicit human annotations rather than flawed VLM proxy labels.
+
+
 ## Current Status (March 2026)
 
 Project maturity by stage:

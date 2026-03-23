@@ -104,7 +104,7 @@ def _build_queue_record(
 ) -> Dict[str, Any]:
     record = dict(judged_row)
 
-    existing_labels = extract_existing_labels(base_row or {})
+    existing_labels = extract_existing_labels(base_row or judged_row)
     provisional = choose_provisional_labels(judged_row)
     if provisional is None:
         raise ValueError(f"Row {judged_row.get('id')} is missing judge predictions")

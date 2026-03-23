@@ -85,6 +85,7 @@ def load_from_hf_dataset(
             "edited_path": target_path,
             "prompt": instruction_en,
             "lang": "en",
+            "source_type": row.get("source_type"),
         }
     
     return records
@@ -158,6 +159,7 @@ def build_judge_input_records(
             "source_image": source_rel,
             "edited_image": edited_rel,
             "instruction_en": meta["prompt"],
+            "source_type": meta.get("source_type"),
         }
         records.append(record)
     
