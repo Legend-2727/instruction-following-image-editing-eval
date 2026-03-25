@@ -1,0 +1,80 @@
+{"sample_id": "pref_03148", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-23T21:10:16.947919"}
+{"sample_id": "pref_02426", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-23T21:11:31.536947"}
+{"sample_id": "pref_11471", "annotator_id": "2005042", "labels": ["Wrong Attribute"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:04:31.074471"}
+{"sample_id": "pref_12101", "annotator_id": "2005042", "labels": ["Missing Object"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:05:11.520851"}
+{"sample_id": "pref_14648", "annotator_id": "2005042", "labels": ["Wrong Attribute", "Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:07:03.037107"}
+{"sample_id": "pref_04935", "annotator_id": "2005042", "labels": ["Extra Object", "Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:09:53.679256"}
+{"sample_id": "pref_11912", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:13:26.571734"}
+{"sample_id": "pref_11694", "annotator_id": "2005042", "labels": ["Under-editing", "Artifact / Quality Issue"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:14:46.610025"}
+{"sample_id": "pref_06112", "annotator_id": "2005042", "labels": ["Ambiguous Prompt"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:15:59.613545"}
+{"sample_id": "pref_02803", "annotator_id": "2005042", "labels": ["Artifact / Quality Issue"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:18:30.021761"}
+{"sample_id": "pref_10002", "annotator_id": "2005042", "labels": ["Artifact / Quality Issue", "Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:19:21.548359"}
+{"sample_id": "pref_02996", "annotator_id": "2005042", "labels": ["Missing Object", "Failed Removal"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:20:46.098159"}
+{"sample_id": "pref_12408", "annotator_id": "2005042", "labels": ["Over-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:21:54.998772"}
+{"sample_id": "pref_06963", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:24:33.209477"}
+{"sample_id": "pref_03284", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:24:48.323428"}
+{"sample_id": "pref_12789", "annotator_id": "2005042", "labels": ["Wrong Attribute"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:25:10.335643"}
+{"sample_id": "pref_13410", "annotator_id": "2005042", "labels": ["Style Mismatch", "Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:25:46.151125"}
+{"sample_id": "pref_14062", "annotator_id": "2005042", "labels": ["Style Mismatch", "Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:25:59.741673"}
+{"sample_id": "pref_02622", "annotator_id": "2005042", "labels": ["Wrong Object"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:26:48.290115"}
+{"sample_id": "pref_10826", "annotator_id": "2005042", "labels": ["Artifact / Quality Issue", "Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:28:15.097118"}
+{"sample_id": "pref_13808", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:36:04.499899"}
+{"sample_id": "pref_08463", "annotator_id": "2005042", "labels": ["Missing Object"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:36:29.622006"}
+{"sample_id": "pref_03241", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:39:36.694856"}
+{"sample_id": "pref_02925", "annotator_id": "2005042", "labels": ["Style Mismatch"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:41:26.860996"}
+{"sample_id": "pref_07542", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:42:38.555842"}
+{"sample_id": "pref_07120", "annotator_id": "2005042", "labels": ["Under-editing", "Wrong Attribute"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:46:23.728885"}
+{"sample_id": "pref_05541", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:47:03.324168"}
+{"sample_id": "pref_02499", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:48:16.833564"}
+{"sample_id": "pref_12587", "annotator_id": "2005042", "labels": ["Wrong Attribute"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:52:20.118106"}
+{"sample_id": "pref_08732", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:52:38.066687"}
+{"sample_id": "pref_02384", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:53:43.810603"}
+{"sample_id": "pref_08446", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:56:05.397669"}
+{"sample_id": "pref_08289", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T20:57:32.626158"}
+{"sample_id": "pref_14299", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:02:33.954496"}
+{"sample_id": "pref_11036", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:07:42.506671"}
+{"sample_id": "pref_12931", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:09:45.113647"}
+{"sample_id": "pref_05787", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:10:05.484457"}
+{"sample_id": "pref_08928", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:14:51.907399"}
+{"sample_id": "pref_10382", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:15:03.256797"}
+{"sample_id": "pref_13107", "annotator_id": "2005042", "labels": ["Wrong Attribute"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:15:20.367110"}
+{"sample_id": "pref_08748", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:15:52.254853"}
+{"sample_id": "pref_11445", "annotator_id": "2005042", "labels": ["Over-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:16:19.732198"}
+{"sample_id": "pref_13782", "annotator_id": "2005042", "labels": ["Over-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:17:29.210869"}
+{"sample_id": "pref_02457", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:18:48.073594"}
+{"sample_id": "pref_12958", "annotator_id": "2005042", "labels": ["Style Mismatch", "Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:19:12.251721"}
+{"sample_id": "pref_02356", "annotator_id": "2005042", "labels": ["Over-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:20:32.070431"}
+{"sample_id": "pref_05717", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:20:58.050886"}
+{"sample_id": "pref_12586", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:21:36.640456"}
+{"sample_id": "pref_08791", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:23:12.185789"}
+{"sample_id": "pref_05422", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:23:32.987527"}
+{"sample_id": "pref_07810", "annotator_id": "2005042", "labels": ["Over-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:24:47.267099"}
+{"sample_id": "pref_10057", "annotator_id": "2005042", "labels": ["Over-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:25:01.091696"}
+{"sample_id": "pref_08582", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:25:18.400894"}
+{"sample_id": "pref_06306", "annotator_id": "2005042", "labels": ["Style Mismatch"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:25:27.700375"}
+{"sample_id": "pref_12409", "annotator_id": "2005042", "labels": ["Style Mismatch", "Extra Object"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:26:19.175759"}
+{"sample_id": "pref_10379", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-24T21:46:08.823773"}
+{"sample_id": "pref_02829", "annotator_id": "2005042", "labels": ["Under-editing", "Style Mismatch"], "comments": "There is  no snow on the roads.\nHeavy winter cloth mismatch on the  lower side of the  man. ", "unclear": 0, "timestamp": "2026-03-25T09:30:03.296156"}
+{"sample_id": "pref_10423", "annotator_id": "2005042", "labels": ["Under-editing", "Style Mismatch"], "comments": "There is  no snow on the roads.\nHeavy winter cloth mismatch on the  lower side of the  man. ", "unclear": 0, "timestamp": "2026-03-25T09:30:07.633832"}
+{"sample_id": "pref_11280", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:35:11.842406"}
+{"sample_id": "pref_08166", "annotator_id": "2005042", "labels": ["Missing Object", "Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:36:31.265563"}
+{"sample_id": "pref_13437", "annotator_id": "Tusher", "labels": ["Missing Object"], "comments": "Replace the existing background of residential buildings --> it vanishes  the residential buidlings\n", "unclear": 0, "timestamp": "2026-03-25T09:37:06.572111"}
+{"sample_id": "pref_04510", "annotator_id": "2005042", "labels": ["Wrong Attribute", "Missing Object"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:38:21.619507"}
+{"sample_id": "pref_02550", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:39:57.916428"}
+{"sample_id": "pref_14402", "annotator_id": "2005042", "labels": ["Extra Object", "Missing Object"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:40:55.607085"}
+{"sample_id": "pref_10305", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:43:18.097806"}
+{"sample_id": "pref_02884", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:44:25.558445"}
+{"sample_id": "pref_03113", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:45:46.209804"}
+{"sample_id": "pref_04568", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:45:51.706007"}
+{"sample_id": "pref_02961", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:47:51.233775"}
+{"sample_id": "pref_05007", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:47:55.447020"}
+{"sample_id": "pref_12740", "annotator_id": "2005042", "labels": ["Missing Object", "Over-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:48:19.683535"}
+{"sample_id": "pref_06095", "annotator_id": "2005042", "labels": ["Over-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T09:49:33.487159"}
+{"sample_id": "pref_13475", "annotator_id": "2005042", "labels": ["Missing Object"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T10:33:52.616179"}
+{"sample_id": "pref_08869", "annotator_id": "2005042", "labels": ["Style Mismatch", "Artifact / Quality Issue", "Over-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T10:47:49.381464"}
+{"sample_id": "pref_03280", "annotator_id": "2005042", "labels": ["Under-editing"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T10:48:07.930794"}
+{"sample_id": "pref_12147", "annotator_id": "2005042", "labels": ["Over-editing", "Style Mismatch"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T10:48:46.411814"}
+{"sample_id": "pref_11066", "annotator_id": "2005042", "labels": ["Over-editing", "Style Mismatch"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T10:49:06.396204"}
+{"sample_id": "pref_13599", "annotator_id": "2005042", "labels": ["Missing Object"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T10:49:27.295592"}
+{"sample_id": "pref_11080", "annotator_id": "2005042", "labels": ["Missing Object", "Extra Object"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T10:50:04.546259"}
+{"sample_id": "pref_10149", "annotator_id": "2005042", "labels": ["Missing Object", "Artifact / Quality Issue"], "comments": "", "unclear": 0, "timestamp": "2026-03-25T10:50:44.040347"}

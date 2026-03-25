@@ -1,0 +1,84 @@
+sample_id,annotator_id,labels,comments,unclear,timestamp
+pref_03148,2005042,"[""Under-editing""]",,0,2026-03-23T21:10:16.947919
+pref_02426,2005042,"[""Under-editing""]",,0,2026-03-23T21:11:31.536947
+pref_11471,2005042,"[""Wrong Attribute""]",,0,2026-03-24T20:04:31.074471
+pref_12101,2005042,"[""Missing Object""]",,0,2026-03-24T20:05:11.520851
+pref_14648,2005042,"[""Wrong Attribute"", ""Under-editing""]",,0,2026-03-24T20:07:03.037107
+pref_04935,2005042,"[""Extra Object"", ""Under-editing""]",,0,2026-03-24T20:09:53.679256
+pref_11912,2005042,"[""Under-editing""]",,0,2026-03-24T20:13:26.571734
+pref_11694,2005042,"[""Under-editing"", ""Artifact / Quality Issue""]",,0,2026-03-24T20:14:46.610025
+pref_06112,2005042,"[""Ambiguous Prompt""]",,0,2026-03-24T20:15:59.613545
+pref_02803,2005042,"[""Artifact / Quality Issue""]",,0,2026-03-24T20:18:30.021761
+pref_10002,2005042,"[""Artifact / Quality Issue"", ""Under-editing""]",,0,2026-03-24T20:19:21.548359
+pref_02996,2005042,"[""Missing Object"", ""Failed Removal""]",,0,2026-03-24T20:20:46.098159
+pref_12408,2005042,"[""Over-editing""]",,0,2026-03-24T20:21:54.998772
+pref_06963,2005042,"[""Under-editing""]",,0,2026-03-24T20:24:33.209477
+pref_03284,2005042,"[""Under-editing""]",,0,2026-03-24T20:24:48.323428
+pref_12789,2005042,"[""Wrong Attribute""]",,0,2026-03-24T20:25:10.335643
+pref_13410,2005042,"[""Style Mismatch"", ""Under-editing""]",,0,2026-03-24T20:25:46.151125
+pref_14062,2005042,"[""Style Mismatch"", ""Under-editing""]",,0,2026-03-24T20:25:59.741673
+pref_02622,2005042,"[""Wrong Object""]",,0,2026-03-24T20:26:48.290115
+pref_10826,2005042,"[""Artifact / Quality Issue"", ""Under-editing""]",,0,2026-03-24T20:28:15.097118
+pref_13808,2005042,"[""Under-editing""]",,0,2026-03-24T20:36:04.499899
+pref_08463,2005042,"[""Missing Object""]",,0,2026-03-24T20:36:29.622006
+pref_03241,2005042,"[""Under-editing""]",,0,2026-03-24T20:39:36.694856
+pref_02925,2005042,"[""Style Mismatch""]",,0,2026-03-24T20:41:26.860996
+pref_07542,2005042,"[""Under-editing""]",,0,2026-03-24T20:42:38.555842
+pref_07120,2005042,"[""Under-editing"", ""Wrong Attribute""]",,0,2026-03-24T20:46:23.728885
+pref_05541,2005042,"[""Under-editing""]",,0,2026-03-24T20:47:03.324168
+pref_02499,2005042,"[""Under-editing""]",,0,2026-03-24T20:48:16.833564
+pref_12587,2005042,"[""Wrong Attribute""]",,0,2026-03-24T20:52:20.118106
+pref_08732,2005042,"[""Under-editing""]",,0,2026-03-24T20:52:38.066687
+pref_02384,2005042,"[""Under-editing""]",,0,2026-03-24T20:53:43.810603
+pref_08446,2005042,"[""Under-editing""]",,0,2026-03-24T20:56:05.397669
+pref_08289,2005042,"[""Under-editing""]",,0,2026-03-24T20:57:32.626158
+pref_14299,2005042,"[""Under-editing""]",,0,2026-03-24T21:02:33.954496
+pref_11036,2005042,"[""Under-editing""]",,0,2026-03-24T21:07:42.506671
+pref_12931,2005042,"[""Under-editing""]",,0,2026-03-24T21:09:45.113647
+pref_05787,2005042,"[""Under-editing""]",,0,2026-03-24T21:10:05.484457
+pref_08928,2005042,"[""Under-editing""]",,0,2026-03-24T21:14:51.907399
+pref_10382,2005042,"[""Under-editing""]",,0,2026-03-24T21:15:03.256797
+pref_13107,2005042,"[""Wrong Attribute""]",,0,2026-03-24T21:15:20.367110
+pref_08748,2005042,"[""Under-editing""]",,0,2026-03-24T21:15:52.254853
+pref_11445,2005042,"[""Over-editing""]",,0,2026-03-24T21:16:19.732198
+pref_13782,2005042,"[""Over-editing""]",,0,2026-03-24T21:17:29.210869
+pref_02457,2005042,"[""Under-editing""]",,0,2026-03-24T21:18:48.073594
+pref_12958,2005042,"[""Style Mismatch"", ""Under-editing""]",,0,2026-03-24T21:19:12.251721
+pref_02356,2005042,"[""Over-editing""]",,0,2026-03-24T21:20:32.070431
+pref_05717,2005042,"[""Under-editing""]",,0,2026-03-24T21:20:58.050886
+pref_12586,2005042,"[""Under-editing""]",,0,2026-03-24T21:21:36.640456
+pref_08791,2005042,"[""Under-editing""]",,0,2026-03-24T21:23:12.185789
+pref_05422,2005042,"[""Under-editing""]",,0,2026-03-24T21:23:32.987527
+pref_07810,2005042,"[""Over-editing""]",,0,2026-03-24T21:24:47.267099
+pref_10057,2005042,"[""Over-editing""]",,0,2026-03-24T21:25:01.091696
+pref_08582,2005042,"[""Under-editing""]",,0,2026-03-24T21:25:18.400894
+pref_06306,2005042,"[""Style Mismatch""]",,0,2026-03-24T21:25:27.700375
+pref_12409,2005042,"[""Style Mismatch"", ""Extra Object""]",,0,2026-03-24T21:26:19.175759
+pref_10379,2005042,"[""Under-editing""]",,0,2026-03-24T21:46:08.823773
+pref_02829,2005042,"[""Under-editing"", ""Style Mismatch""]","There is  no snow on the roads.
+Heavy winter cloth mismatch on the  lower side of the  man. ",0,2026-03-25T09:30:03.296156
+pref_10423,2005042,"[""Under-editing"", ""Style Mismatch""]","There is  no snow on the roads.
+Heavy winter cloth mismatch on the  lower side of the  man. ",0,2026-03-25T09:30:07.633832
+pref_11280,2005042,"[""Under-editing""]",,0,2026-03-25T09:35:11.842406
+pref_08166,2005042,"[""Missing Object"", ""Under-editing""]",,0,2026-03-25T09:36:31.265563
+pref_13437,Tusher,"[""Missing Object""]","Replace the existing background of residential buildings --> it vanishes  the residential buidlings
+",0,2026-03-25T09:37:06.572111
+pref_04510,2005042,"[""Wrong Attribute"", ""Missing Object""]",,0,2026-03-25T09:38:21.619507
+pref_02550,2005042,"[""Under-editing""]",,0,2026-03-25T09:39:57.916428
+pref_14402,2005042,"[""Extra Object"", ""Missing Object""]",,0,2026-03-25T09:40:55.607085
+pref_10305,2005042,"[""Under-editing""]",,0,2026-03-25T09:43:18.097806
+pref_02884,2005042,"[""Under-editing""]",,0,2026-03-25T09:44:25.558445
+pref_03113,2005042,"[""Under-editing""]",,0,2026-03-25T09:45:46.209804
+pref_04568,2005042,"[""Under-editing""]",,0,2026-03-25T09:45:51.706007
+pref_02961,2005042,"[""Under-editing""]",,0,2026-03-25T09:47:51.233775
+pref_05007,2005042,"[""Under-editing""]",,0,2026-03-25T09:47:55.447020
+pref_12740,2005042,"[""Missing Object"", ""Over-editing""]",,0,2026-03-25T09:48:19.683535
+pref_06095,2005042,"[""Over-editing""]",,0,2026-03-25T09:49:33.487159
+pref_13475,2005042,"[""Missing Object""]",,0,2026-03-25T10:33:52.616179
+pref_08869,2005042,"[""Style Mismatch"", ""Artifact / Quality Issue"", ""Over-editing""]",,0,2026-03-25T10:47:49.381464
+pref_03280,2005042,"[""Under-editing""]",,0,2026-03-25T10:48:07.930794
+pref_12147,2005042,"[""Over-editing"", ""Style Mismatch""]",,0,2026-03-25T10:48:46.411814
+pref_11066,2005042,"[""Over-editing"", ""Style Mismatch""]",,0,2026-03-25T10:49:06.396204
+pref_13599,2005042,"[""Missing Object""]",,0,2026-03-25T10:49:27.295592
+pref_11080,2005042,"[""Missing Object"", ""Extra Object""]",,0,2026-03-25T10:50:04.546259
+pref_10149,2005042,"[""Missing Object"", ""Artifact / Quality Issue""]",,0,2026-03-25T10:50:44.040347
