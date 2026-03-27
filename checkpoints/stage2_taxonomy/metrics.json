@@ -1,0 +1,234 @@
+{
+  "stage1_checkpoint_load": {
+    "loaded": false,
+    "reason": "no_checkpoint"
+  },
+  "dataset_sizes": {
+    "train_expanded": 14328,
+    "val_expanded": 1791,
+    "test_expanded": 1791
+  },
+  "best_thresholds": {
+    "Wrong Object": 0.1,
+    "Missing Object": 0.85,
+    "Extra Object": 0.95,
+    "Wrong Attribute": 0.85,
+    "Spatial Error": 0.9,
+    "Style Mismatch": 0.1,
+    "Over-editing": 0.15000000000000002,
+    "Under-editing": 0.30000000000000004,
+    "Artifact / Quality Issue": 0.7000000000000001,
+    "Ambiguous Prompt": 0.1,
+    "Failed Removal": 0.85
+  },
+  "val": {
+    "loss": 3.1572995738197576,
+    "overall": {
+      "micro_f1": 0.5452352231604343,
+      "macro_f1": 0.26253919178796026,
+      "mAP_macro": 0.2142584182228833,
+      "mAP_micro": 0.476423399297338
+    },
+    "by_lang": {
+      "en": {
+        "micro_f1": 0.5452352231604343,
+        "macro_f1": 0.26253919178796026,
+        "mAP_macro": 0.2144865680202365,
+        "mAP_micro": 0.4764506933803945
+      },
+      "hi": {
+        "micro_f1": 0.5452352231604343,
+        "macro_f1": 0.26253919178796026,
+        "mAP_macro": 0.21448830182255937,
+        "mAP_micro": 0.4764479185644227
+      },
+      "bn": {
+        "micro_f1": 0.5452352231604343,
+        "macro_f1": 0.26253919178796026,
+        "mAP_macro": 0.21447682592232295,
+        "mAP_micro": 0.4764315164060082
+      },
+      "overall": {
+        "micro_f1": 0.5452352231604343,
+        "macro_f1": 0.26253919178796026,
+        "mAP_macro": 0.2142584182228833,
+        "mAP_micro": 0.476423399297338
+      }
+    },
+    "by_lang_debug": {
+      "en": {
+        "eval_rows": 597,
+        "positive_label_count": 409,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 6,
+          "Missing Object": 26,
+          "Extra Object": 0,
+          "Wrong Attribute": 39,
+          "Spatial Error": 21,
+          "Style Mismatch": 58,
+          "Over-editing": 23,
+          "Under-editing": 219,
+          "Artifact / Quality Issue": 11,
+          "Ambiguous Prompt": 1,
+          "Failed Removal": 5
+        }
+      },
+      "hi": {
+        "eval_rows": 597,
+        "positive_label_count": 409,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 6,
+          "Missing Object": 26,
+          "Extra Object": 0,
+          "Wrong Attribute": 39,
+          "Spatial Error": 21,
+          "Style Mismatch": 58,
+          "Over-editing": 23,
+          "Under-editing": 219,
+          "Artifact / Quality Issue": 11,
+          "Ambiguous Prompt": 1,
+          "Failed Removal": 5
+        }
+      },
+      "bn": {
+        "eval_rows": 597,
+        "positive_label_count": 409,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 6,
+          "Missing Object": 26,
+          "Extra Object": 0,
+          "Wrong Attribute": 39,
+          "Spatial Error": 21,
+          "Style Mismatch": 58,
+          "Over-editing": 23,
+          "Under-editing": 219,
+          "Artifact / Quality Issue": 11,
+          "Ambiguous Prompt": 1,
+          "Failed Removal": 5
+        }
+      },
+      "overall": {
+        "eval_rows": 1791,
+        "positive_label_count": 1227,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 18,
+          "Missing Object": 78,
+          "Extra Object": 0,
+          "Wrong Attribute": 117,
+          "Spatial Error": 63,
+          "Style Mismatch": 174,
+          "Over-editing": 69,
+          "Under-editing": 657,
+          "Artifact / Quality Issue": 33,
+          "Ambiguous Prompt": 3,
+          "Failed Removal": 15
+        }
+      }
+    }
+  },
+  "test": {
+    "loss": 2.318897715927269,
+    "overall": {
+      "micro_f1": 0.5276796230859835,
+      "macro_f1": 0.24273184953307306,
+      "mAP_macro": 0.22983850678443743,
+      "mAP_micro": 0.476016827635759
+    },
+    "by_lang": {
+      "en": {
+        "micro_f1": 0.5276796230859835,
+        "macro_f1": 0.24273184953307306,
+        "mAP_macro": 0.2300143628798036,
+        "mAP_micro": 0.4760360475665769
+      },
+      "hi": {
+        "micro_f1": 0.5276796230859835,
+        "macro_f1": 0.24273184953307306,
+        "mAP_macro": 0.2300182200098704,
+        "mAP_micro": 0.4760614733005717
+      },
+      "bn": {
+        "micro_f1": 0.5276796230859835,
+        "macro_f1": 0.24273184953307306,
+        "mAP_macro": 0.23001747737822925,
+        "mAP_micro": 0.4760146171517402
+      },
+      "overall": {
+        "micro_f1": 0.5276796230859835,
+        "macro_f1": 0.24273184953307306,
+        "mAP_macro": 0.22983850678443743,
+        "mAP_micro": 0.476016827635759
+      }
+    },
+    "by_lang_debug": {
+      "en": {
+        "eval_rows": 597,
+        "positive_label_count": 401,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 5,
+          "Missing Object": 21,
+          "Extra Object": 0,
+          "Wrong Attribute": 53,
+          "Spatial Error": 20,
+          "Style Mismatch": 57,
+          "Over-editing": 13,
+          "Under-editing": 221,
+          "Artifact / Quality Issue": 7,
+          "Ambiguous Prompt": 0,
+          "Failed Removal": 4
+        }
+      },
+      "hi": {
+        "eval_rows": 597,
+        "positive_label_count": 401,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 5,
+          "Missing Object": 21,
+          "Extra Object": 0,
+          "Wrong Attribute": 53,
+          "Spatial Error": 20,
+          "Style Mismatch": 57,
+          "Over-editing": 13,
+          "Under-editing": 221,
+          "Artifact / Quality Issue": 7,
+          "Ambiguous Prompt": 0,
+          "Failed Removal": 4
+        }
+      },
+      "bn": {
+        "eval_rows": 597,
+        "positive_label_count": 401,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 5,
+          "Missing Object": 21,
+          "Extra Object": 0,
+          "Wrong Attribute": 53,
+          "Spatial Error": 20,
+          "Style Mismatch": 57,
+          "Over-editing": 13,
+          "Under-editing": 221,
+          "Artifact / Quality Issue": 7,
+          "Ambiguous Prompt": 0,
+          "Failed Removal": 4
+        }
+      },
+      "overall": {
+        "eval_rows": 1791,
+        "positive_label_count": 1203,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 15,
+          "Missing Object": 63,
+          "Extra Object": 0,
+          "Wrong Attribute": 159,
+          "Spatial Error": 60,
+          "Style Mismatch": 171,
+          "Over-editing": 39,
+          "Under-editing": 663,
+          "Artifact / Quality Issue": 21,
+          "Ambiguous Prompt": 0,
+          "Failed Removal": 12
+        }
+      }
+    }
+  }
+}

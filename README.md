@@ -281,6 +281,104 @@ python scripts/analyze_failures.py \
 
 ---
 
+## Stage-2 Multilingual Taxonomy Pipeline (New)
+
+The repository now includes a full original-id-safe Stage-2 workflow:
+
+1. Build final labeled originals dataset from multilingual metadata + verified rejected annotations.
+2. Split originals into `train`, `val`, `test`, and isolated `demo_infer`.
+3. Train a tri-input multilingual taxonomy model (source image + edited image + one prompt).
+4. Run single-sample or demo-split inference.
+
+### 1) Build final labeled dataset
+
+```bash
+python scripts/build_final_multilingual_taxonomy_dataset.py \
+  --metadata data/hf_snapshots/xlingual_picobanana_multilingual_6k/metadata.jsonl \
+  --annotations /home/user/ML-Project(42_46)/pref_test_sample.json \
+  --out_jsonl data/final/final_taxonomy_originals.jsonl \
+  --out_summary data/final/final_taxonomy_summary.json
+```
+
+### 2) Build original-level splits
+
+```bash
+python scripts/split_final_taxonomy_dataset.py \
+  --input_jsonl data/final/final_taxonomy_originals.jsonl \
+  --out_dir data/final/splits \
+  --demo_size 30 \
+  --val_ratio 0.10 \
+  --test_ratio 0.10 \
+  --seed 42
+```
+
+### 3) Train Stage-2 taxonomy model
+
+```bash
+python scripts/train_stage2_multilingual_taxonomy.py \
+  --train_jsonl data/final/splits/train_originals.jsonl \
+  --val_jsonl data/final/splits/val_originals.jsonl \
+  --test_jsonl data/final/splits/test_originals.jsonl \
+  --image_root data/hf_snapshots/xlingual_picobanana_full \
+  --out runs/stage2_taxonomy \
+  --stage1_checkpoint runs/stage1_multilingual_binary/best_model.pt \
+  --batch_size 48 \
+  --epochs 10 \
+  --lr 2e-4 \
+  --weight_decay 1e-4 \
+  --max_text_len 128 \
+  --num_workers 8 \
+  --seed 42 \
+  --amp
+```
+
+### 4) Single-sample inference
+
+```bash
+python scripts/infer_stage2_taxonomy.py \
+  --source_image data/hf_snapshots/xlingual_picobanana_full/images/source/shard_00/example.png \
+  --edited_image data/hf_snapshots/xlingual_picobanana_full/images/target/shard_00/example.png \
+  --prompt "your prompt in en or hi or bn" \
+  --lang en \
+  --checkpoint runs/stage2_taxonomy/best_model.pt \
+  --thresholds_json runs/stage2_taxonomy/best_thresholds.json \
+  --amp
+```
+
+### 5) Demo split inference
+
+```bash
+python scripts/run_demo_inference.py \
+  --demo_jsonl data/final/splits/demo_infer_originals.jsonl \
+  --image_root data/hf_snapshots/xlingual_picobanana_full \
+  --checkpoint runs/stage2_taxonomy/best_model.pt \
+  --thresholds_json runs/stage2_taxonomy/best_thresholds.json \
+  --lang en \
+  --out_dir runs/stage2_demo_inference \
+  --amp
+```
+
+### Stage-2 outputs
+
+- Dataset build:
+  - `data/final/final_taxonomy_originals.jsonl`
+  - `data/final/final_taxonomy_summary.json`
+- Split stage:
+  - `data/final/splits/train_originals.jsonl`
+  - `data/final/splits/val_originals.jsonl`
+  - `data/final/splits/test_originals.jsonl`
+  - `data/final/splits/demo_infer_originals.jsonl`
+  - `data/final/splits/split_summary.json`
+- Training stage:
+  - `best_model.pt`, `final_model.pt`
+  - `metrics.json`, `label_map.json`, `best_thresholds.json`
+  - `predictions_val.jsonl`, `predictions_test.jsonl`
+- Demo inference stage:
+  - `runs/stage2_demo_inference/demo_predictions.jsonl`
+  - `runs/stage2_demo_inference/demo_report.csv`
+
+---
+
 ## Verification Results (Feb 8, 2026)
 
 We ran the **complete pipeline end-to-end with 20 samples**:

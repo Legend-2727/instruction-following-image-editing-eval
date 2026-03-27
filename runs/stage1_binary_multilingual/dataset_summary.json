@@ -1,0 +1,19 @@
+{
+  "original_samples_count": 4800,
+  "total_expanded_rows_count": 14400,
+  "splits_expanded_rows": {
+    "train": 11520,
+    "val": 1440,
+    "test": 1440
+  },
+  "classes_original_count": {
+    "sft (1)": 2107,
+    "preference_rejected (0)": 2693
+  },
+  "per_language_expanded_rows": {
+    "en": 4800,
+    "hi": 4800,
+    "bn": 4800
+  },
+  "pos_weight_for_loss": 1.2802850008010864
+}

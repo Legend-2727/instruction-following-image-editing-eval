@@ -24,8 +24,12 @@ Thumbs.db
 # Data and Runtime files
 cloudflared
 cloudflared.log
+nohup.out
 logs/
 runs/
 artifacts/
 data/hf_snapshots/
 data/splits/*.db
+
+# Save versioned checkpoints in a non-ignored folder such as checkpoints/
+# so they can be tracked with Git LFS patterns from .gitattributes.
