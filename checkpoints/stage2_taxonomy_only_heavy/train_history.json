@@ -1,0 +1,301 @@
+{
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.7253580581286788,
+      "val_loss": 2.1176204522450766,
+      "val_metrics": {
+        "micro_f1": 0.5432314410480349,
+        "macro_f1": 0.2989051632268293,
+        "macro_f1_all": 0.2989051632268293,
+        "macro_f1_supported": 0.3287956795495123,
+        "mAP_micro": 0.5298861398765892,
+        "mAP_macro": 0.23672774298324797,
+        "mAP_macro_all": 0.23672774298324797,
+        "mAP_macro_supported": 0.26040051728157276,
+        "AUROC_macro_all": 0.5114879015313886,
+        "AUROC_macro_supported": 0.5626366916845275
+      },
+      "val_pred_diagnostics": {
+        "avg_predicted_positives_per_sample": 2.6285714285714286,
+        "predicted_positive_count_per_class": {
+          "Wrong Object": 9,
+          "Missing Object": 33,
+          "Extra Object": 0,
+          "Wrong Attribute": 655,
+          "Spatial Error": 139,
+          "Style Mismatch": 436,
+          "Over-editing": 48,
+          "Under-editing": 837,
+          "Artifact / Quality Issue": 42,
+          "Ambiguous Prompt": 0,
+          "Failed Removal": 9
+        },
+        "mean_probability_per_class": {
+          "Wrong Object": 0.01154327392578125,
+          "Missing Object": 0.2403564453125,
+          "Extra Object": 2.7418136596679688e-05,
+          "Wrong Attribute": 0.44287109375,
+          "Spatial Error": 0.09124755859375,
+          "Style Mismatch": 0.483642578125,
+          "Over-editing": 0.0736083984375,
+          "Under-editing": 0.8408203125,
+          "Artifact / Quality Issue": 0.255859375,
+          "Ambiguous Prompt": 4.410743713378906e-05,
+          "Failed Removal": 0.06219482421875
+        },
+        "max_probability_per_class": {
+          "Wrong Object": 0.498779296875,
+          "Missing Object": 0.99951171875,
+          "Extra Object": 0.0007410049438476562,
+          "Wrong Attribute": 0.970703125,
+          "Spatial Error": 0.9951171875,
+          "Style Mismatch": 0.9775390625,
+          "Over-editing": 0.998046875,
+          "Under-editing": 0.99755859375,
+          "Artifact / Quality Issue": 0.99658203125,
+          "Ambiguous Prompt": 0.0003006458282470703,
+          "Failed Removal": 0.99560546875
+        }
+      },
+      "primary_metric": 0.3287956795495123,
+      "optimizer_groups": {
+        "head": {
+          "lr": 0.0002,
+          "param_count": 17344523
+        },
+        "text": {
+          "lr": 2e-05,
+          "param_count": 14175744
+        },
+        "vision": {
+          "lr": 0.0,
+          "param_count": 0
+        }
+      }
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.21923735191245047,
+      "val_loss": 4.410667326620647,
+      "val_metrics": {
+        "micro_f1": 0.6133431625506819,
+        "macro_f1": 0.26765000652122733,
+        "macro_f1_all": 0.26765000652122733,
+        "macro_f1_supported": 0.2944150071733501,
+        "mAP_micro": 0.5915936828769783,
+        "mAP_macro": 0.2432725936979151,
+        "mAP_macro_all": 0.2432725936979151,
+        "mAP_macro_supported": 0.2675998530677066,
+        "AUROC_macro_all": 0.5257675783370804,
+        "AUROC_macro_supported": 0.5783443361707885
+      },
+      "val_pred_diagnostics": {
+        "avg_predicted_positives_per_sample": 1.769047619047619,
+        "predicted_positive_count_per_class": {
+          "Wrong Object": 6,
+          "Missing Object": 69,
+          "Extra Object": 0,
+          "Wrong Attribute": 152,
+          "Spatial Error": 21,
+          "Style Mismatch": 380,
+          "Over-editing": 21,
+          "Under-editing": 825,
+          "Artifact / Quality Issue": 9,
+          "Ambiguous Prompt": 0,
+          "Failed Removal": 3
+        },
+        "mean_probability_per_class": {
+          "Wrong Object": 0.00457000732421875,
+          "Missing Object": 0.114013671875,
+          "Extra Object": 0.0,
+          "Wrong Attribute": 0.18701171875,
+          "Spatial Error": 0.05316162109375,
+          "Style Mismatch": 0.267333984375,
+          "Over-editing": 0.0283050537109375,
+          "Under-editing": 0.857421875,
+          "Artifact / Quality Issue": 0.02886962890625,
+          "Ambiguous Prompt": 0.0,
+          "Failed Removal": 0.00994873046875
+        },
+        "max_probability_per_class": {
+          "Wrong Object": 0.92431640625,
+          "Missing Object": 1.0,
+          "Extra Object": 2.384185791015625e-07,
+          "Wrong Attribute": 0.9990234375,
+          "Spatial Error": 0.99853515625,
+          "Style Mismatch": 1.0,
+          "Over-editing": 1.0,
+          "Under-editing": 1.0,
+          "Artifact / Quality Issue": 0.99951171875,
+          "Ambiguous Prompt": 1.7881393432617188e-07,
+          "Failed Removal": 0.9990234375
+        }
+      },
+      "primary_metric": 0.2944150071733501,
+      "optimizer_groups": {
+        "head": {
+          "lr": 0.0002,
+          "param_count": 17344523
+        },
+        "text": {
+          "lr": 2e-05,
+          "param_count": 14175744
+        },
+        "vision": {
+          "lr": 0.0,
+          "param_count": 0
+        }
+      }
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.08295205295436206,
+      "val_loss": 4.638819558208897,
+      "val_metrics": {
+        "micro_f1": 0.6467065868263473,
+        "macro_f1": 0.2972090505813241,
+        "macro_f1_all": 0.2972090505813241,
+        "macro_f1_supported": 0.3269299556394565,
+        "mAP_micro": 0.6132212567260656,
+        "mAP_macro": 0.2580644733024208,
+        "mAP_macro_all": 0.2580644733024208,
+        "mAP_macro_supported": 0.28387092063266295,
+        "AUROC_macro_all": 0.5422970283462326,
+        "AUROC_macro_supported": 0.596526731180856
+      },
+      "val_pred_diagnostics": {
+        "avg_predicted_positives_per_sample": 1.5214285714285714,
+        "predicted_positive_count_per_class": {
+          "Wrong Object": 3,
+          "Missing Object": 50,
+          "Extra Object": 0,
+          "Wrong Attribute": 57,
+          "Spatial Error": 55,
+          "Style Mismatch": 196,
+          "Over-editing": 77,
+          "Under-editing": 825,
+          "Artifact / Quality Issue": 12,
+          "Ambiguous Prompt": 0,
+          "Failed Removal": 3
+        },
+        "mean_probability_per_class": {
+          "Wrong Object": 0.0025005340576171875,
+          "Missing Object": 0.11529541015625,
+          "Extra Object": 0.0,
+          "Wrong Attribute": 0.1416015625,
+          "Spatial Error": 0.052642822265625,
+          "Style Mismatch": 0.19775390625,
+          "Over-editing": 0.0633544921875,
+          "Under-editing": 0.8994140625,
+          "Artifact / Quality Issue": 0.03125,
+          "Ambiguous Prompt": 0.0,
+          "Failed Removal": 0.01364898681640625
+        },
+        "max_probability_per_class": {
+          "Wrong Object": 0.244873046875,
+          "Missing Object": 1.0,
+          "Extra Object": 0.0,
+          "Wrong Attribute": 0.99951171875,
+          "Spatial Error": 1.0,
+          "Style Mismatch": 1.0,
+          "Over-editing": 1.0,
+          "Under-editing": 1.0,
+          "Artifact / Quality Issue": 0.99853515625,
+          "Ambiguous Prompt": 0.0,
+          "Failed Removal": 0.99951171875
+        }
+      },
+      "primary_metric": 0.3269299556394565,
+      "optimizer_groups": {
+        "head": {
+          "lr": 0.0002,
+          "param_count": 17344523
+        },
+        "text": {
+          "lr": 2e-05,
+          "param_count": 14175744
+        },
+        "vision": {
+          "lr": 0.0,
+          "param_count": 0
+        }
+      }
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.052593619705836335,
+      "val_loss": 5.085916734238466,
+      "val_metrics": {
+        "micro_f1": 0.6358695652173914,
+        "macro_f1": 0.2794054531700539,
+        "macro_f1_all": 0.2794054531700539,
+        "macro_f1_supported": 0.3073459984870593,
+        "mAP_micro": 0.6292539756525068,
+        "mAP_macro": 0.25083179057677474,
+        "mAP_macro_all": 0.25083179057677474,
+        "mAP_macro_supported": 0.27591496963445217,
+        "AUROC_macro_all": 0.5397745211096255,
+        "AUROC_macro_supported": 0.5937519732205881
+      },
+      "val_pred_diagnostics": {
+        "avg_predicted_positives_per_sample": 1.605952380952381,
+        "predicted_positive_count_per_class": {
+          "Wrong Object": 12,
+          "Missing Object": 55,
+          "Extra Object": 0,
+          "Wrong Attribute": 83,
+          "Spatial Error": 35,
+          "Style Mismatch": 298,
+          "Over-editing": 48,
+          "Under-editing": 803,
+          "Artifact / Quality Issue": 9,
+          "Ambiguous Prompt": 0,
+          "Failed Removal": 6
+        },
+        "mean_probability_per_class": {
+          "Wrong Object": 0.008087158203125,
+          "Missing Object": 0.06451416015625,
+          "Extra Object": 0.0,
+          "Wrong Attribute": 0.1461181640625,
+          "Spatial Error": 0.053863525390625,
+          "Style Mismatch": 0.2431640625,
+          "Over-editing": 0.04266357421875,
+          "Under-editing": 0.91162109375,
+          "Artifact / Quality Issue": 0.0250701904296875,
+          "Ambiguous Prompt": 0.0,
+          "Failed Removal": 0.0088348388671875
+        },
+        "max_probability_per_class": {
+          "Wrong Object": 0.86328125,
+          "Missing Object": 1.0,
+          "Extra Object": 0.0,
+          "Wrong Attribute": 1.0,
+          "Spatial Error": 1.0,
+          "Style Mismatch": 1.0,
+          "Over-editing": 1.0,
+          "Under-editing": 1.0,
+          "Artifact / Quality Issue": 0.99951171875,
+          "Ambiguous Prompt": 0.0,
+          "Failed Removal": 0.990234375
+        }
+      },
+      "primary_metric": 0.3073459984870593,
+      "optimizer_groups": {
+        "head": {
+          "lr": 0.0002,
+          "param_count": 17344523
+        },
+        "text": {
+          "lr": 2e-05,
+          "param_count": 14175744
+        },
+        "vision": {
+          "lr": 0.0,
+          "param_count": 0
+        }
+      }
+    }
+  ],
+  "best_primary_metric": 0.3287956795495123
+}

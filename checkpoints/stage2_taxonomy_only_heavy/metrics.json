@@ -1,0 +1,636 @@
+{
+  "stage1_checkpoint_load": {
+    "loaded": false,
+    "reason": "no_checkpoint"
+  },
+  "dataset_sizes": {
+    "train_expanded": 6636,
+    "val_expanded": 840,
+    "test_expanded": 813
+  },
+  "split_support": {
+    "train_support": {
+      "Wrong Object": 52,
+      "Missing Object": 173,
+      "Extra Object": 0,
+      "Wrong Attribute": 450,
+      "Spatial Error": 153,
+      "Style Mismatch": 492,
+      "Over-editing": 81,
+      "Under-editing": 1743,
+      "Artifact / Quality Issue": 106,
+      "Ambiguous Prompt": 0,
+      "Failed Removal": 43
+    },
+    "val_support": {
+      "Wrong Object": 6,
+      "Missing Object": 26,
+      "Extra Object": 0,
+      "Wrong Attribute": 39,
+      "Spatial Error": 21,
+      "Style Mismatch": 58,
+      "Over-editing": 23,
+      "Under-editing": 219,
+      "Artifact / Quality Issue": 11,
+      "Ambiguous Prompt": 1,
+      "Failed Removal": 5
+    },
+    "test_support": {
+      "Wrong Object": 5,
+      "Missing Object": 21,
+      "Extra Object": 0,
+      "Wrong Attribute": 53,
+      "Spatial Error": 20,
+      "Style Mismatch": 57,
+      "Over-editing": 13,
+      "Under-editing": 221,
+      "Artifact / Quality Issue": 7,
+      "Ambiguous Prompt": 0,
+      "Failed Removal": 4
+    },
+    "warnings": [
+      "Validation has zero support for classes: ['Extra Object']",
+      "Test has zero support for classes: ['Extra Object', 'Ambiguous Prompt']"
+    ]
+  },
+  "train_setup": {
+    "phase_info_initial": {
+      "warmup_active": false,
+      "vision_trainable": false,
+      "text_trainable": true,
+      "text_policy": {
+        "freeze_text": false,
+        "unfreeze_last_n_layers": 2,
+        "selected_text_layer_indices": [
+          10,
+          11
+        ],
+        "trainable_text_param_count": 14175744
+      }
+    },
+    "optimizer_groups_initial": {
+      "head": {
+        "lr": 0.0002,
+        "param_count": 17344523
+      },
+      "text": {
+        "lr": 2e-05,
+        "param_count": 14175744
+      },
+      "vision": {
+        "lr": 0.0,
+        "param_count": 0
+      }
+    },
+    "use_weighted_sampler": false,
+    "use_focal_loss": false,
+    "taxonomy_only": true
+  },
+  "best_thresholds": {
+    "Wrong Object": 0.30000000000000004,
+    "Missing Object": 0.9,
+    "Extra Object": null,
+    "Wrong Attribute": 0.15000000000000002,
+    "Spatial Error": 0.15000000000000002,
+    "Style Mismatch": 0.45000000000000007,
+    "Over-editing": 0.4,
+    "Under-editing": 0.15000000000000002,
+    "Artifact / Quality Issue": 0.9,
+    "Ambiguous Prompt": 0.1,
+    "Failed Removal": 0.9
+  },
+  "val": {
+    "loss": 2.1176204522450766,
+    "overall": {
+      "micro_f1": 0.5432314410480349,
+      "macro_f1": 0.2989051632268293,
+      "macro_f1_all": 0.2989051632268293,
+      "macro_f1_supported": 0.3287956795495123,
+      "mAP_micro": 0.5298861398765892,
+      "mAP_macro": 0.23672774298324797,
+      "mAP_macro_all": 0.23672774298324797,
+      "mAP_macro_supported": 0.26040051728157276,
+      "AUROC_macro_all": 0.5114879015313886,
+      "AUROC_macro_supported": 0.5626366916845275
+    },
+    "prediction_diagnostics": {
+      "avg_predicted_positives_per_sample": 2.6285714285714286,
+      "predicted_positive_count_per_class": {
+        "Wrong Object": 9,
+        "Missing Object": 33,
+        "Extra Object": 0,
+        "Wrong Attribute": 655,
+        "Spatial Error": 139,
+        "Style Mismatch": 436,
+        "Over-editing": 48,
+        "Under-editing": 837,
+        "Artifact / Quality Issue": 42,
+        "Ambiguous Prompt": 0,
+        "Failed Removal": 9
+      },
+      "mean_probability_per_class": {
+        "Wrong Object": 0.01154327392578125,
+        "Missing Object": 0.2403564453125,
+        "Extra Object": 2.7418136596679688e-05,
+        "Wrong Attribute": 0.44287109375,
+        "Spatial Error": 0.09124755859375,
+        "Style Mismatch": 0.483642578125,
+        "Over-editing": 0.0736083984375,
+        "Under-editing": 0.8408203125,
+        "Artifact / Quality Issue": 0.255859375,
+        "Ambiguous Prompt": 4.410743713378906e-05,
+        "Failed Removal": 0.06219482421875
+      },
+      "max_probability_per_class": {
+        "Wrong Object": 0.498779296875,
+        "Missing Object": 0.99951171875,
+        "Extra Object": 0.0007410049438476562,
+        "Wrong Attribute": 0.970703125,
+        "Spatial Error": 0.9951171875,
+        "Style Mismatch": 0.9775390625,
+        "Over-editing": 0.998046875,
+        "Under-editing": 0.99755859375,
+        "Artifact / Quality Issue": 0.99658203125,
+        "Ambiguous Prompt": 0.0003006458282470703,
+        "Failed Removal": 0.99560546875
+      }
+    },
+    "by_lang": {
+      "en": {
+        "micro_f1": 0.5441819772528433,
+        "macro_f1": 0.29947500363016866,
+        "macro_f1_all": 0.29947500363016866,
+        "macro_f1_supported": 0.3294225039931855,
+        "mAP_micro": 0.5334339620828349,
+        "mAP_macro": 0.24076589947407534,
+        "mAP_macro_all": 0.24076589947407534,
+        "mAP_macro_supported": 0.26484248942148286,
+        "AUROC_macro_all": 0.5124590279997604,
+        "AUROC_macro_supported": 0.5637049307997364
+      },
+      "hi": {
+        "micro_f1": 0.5422842197035745,
+        "macro_f1": 0.2985098566152742,
+        "macro_f1_all": 0.2985098566152742,
+        "macro_f1_supported": 0.3283608422768016,
+        "mAP_micro": 0.5291918545763935,
+        "mAP_macro": 0.243185127954892,
+        "mAP_macro_all": 0.243185127954892,
+        "mAP_macro_supported": 0.2675036407503812,
+        "AUROC_macro_all": 0.5113461064655264,
+        "AUROC_macro_supported": 0.562480717112079
+      },
+      "bn": {
+        "micro_f1": 0.5432314410480349,
+        "macro_f1": 0.29874578632341114,
+        "macro_f1_all": 0.29874578632341114,
+        "macro_f1_supported": 0.32862036495575236,
+        "mAP_micro": 0.5284542585386874,
+        "mAP_macro": 0.24299578774161376,
+        "mAP_macro_all": 0.24299578774161376,
+        "mAP_macro_supported": 0.2672953665157751,
+        "AUROC_macro_all": 0.5104864053812457,
+        "AUROC_macro_supported": 0.5615350459193703
+      },
+      "overall": {
+        "micro_f1": 0.5432314410480349,
+        "macro_f1": 0.2989051632268293,
+        "macro_f1_all": 0.2989051632268293,
+        "macro_f1_supported": 0.3287956795495123,
+        "mAP_micro": 0.5298861398765892,
+        "mAP_macro": 0.23672774298324797,
+        "mAP_macro_all": 0.23672774298324797,
+        "mAP_macro_supported": 0.26040051728157276,
+        "AUROC_macro_all": 0.5114879015313886,
+        "AUROC_macro_supported": 0.5626366916845275
+      }
+    },
+    "by_lang_debug": {
+      "en": {
+        "eval_rows": 280,
+        "positive_label_count": 409,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 6,
+          "Missing Object": 26,
+          "Extra Object": 0,
+          "Wrong Attribute": 39,
+          "Spatial Error": 21,
+          "Style Mismatch": 58,
+          "Over-editing": 23,
+          "Under-editing": 219,
+          "Artifact / Quality Issue": 11,
+          "Ambiguous Prompt": 1,
+          "Failed Removal": 5
+        }
+      },
+      "hi": {
+        "eval_rows": 280,
+        "positive_label_count": 409,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 6,
+          "Missing Object": 26,
+          "Extra Object": 0,
+          "Wrong Attribute": 39,
+          "Spatial Error": 21,
+          "Style Mismatch": 58,
+          "Over-editing": 23,
+          "Under-editing": 219,
+          "Artifact / Quality Issue": 11,
+          "Ambiguous Prompt": 1,
+          "Failed Removal": 5
+        }
+      },
+      "bn": {
+        "eval_rows": 280,
+        "positive_label_count": 409,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 6,
+          "Missing Object": 26,
+          "Extra Object": 0,
+          "Wrong Attribute": 39,
+          "Spatial Error": 21,
+          "Style Mismatch": 58,
+          "Over-editing": 23,
+          "Under-editing": 219,
+          "Artifact / Quality Issue": 11,
+          "Ambiguous Prompt": 1,
+          "Failed Removal": 5
+        }
+      },
+      "overall": {
+        "eval_rows": 840,
+        "positive_label_count": 1227,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 18,
+          "Missing Object": 78,
+          "Extra Object": 0,
+          "Wrong Attribute": 117,
+          "Spatial Error": 63,
+          "Style Mismatch": 174,
+          "Over-editing": 69,
+          "Under-editing": 657,
+          "Artifact / Quality Issue": 33,
+          "Ambiguous Prompt": 3,
+          "Failed Removal": 15
+        }
+      }
+    },
+    "per_class": {
+      "Wrong Object": {
+        "precision": 0.6666666666666666,
+        "recall": 0.3333333333333333,
+        "f1": 0.4444444444444444,
+        "ap": 0.19693910415104673,
+        "auroc": 0.6466950527169506,
+        "support_positive": 18
+      },
+      "Missing Object": {
+        "precision": 0.45454545454545453,
+        "recall": 0.19230769230769232,
+        "f1": 0.2702702702702703,
+        "ap": 0.24728578155728365,
+        "auroc": 0.5629248267043543,
+        "support_positive": 78
+      },
+      "Extra Object": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "ap": 0.0,
+        "auroc": 0.0,
+        "support_positive": 0
+      },
+      "Wrong Attribute": {
+        "precision": 0.13740458015267176,
+        "recall": 0.7692307692307693,
+        "f1": 0.23316062176165803,
+        "ap": 0.17431946468667375,
+        "auroc": 0.5099715099715101,
+        "support_positive": 117
+      },
+      "Spatial Error": {
+        "precision": 0.19424460431654678,
+        "recall": 0.42857142857142855,
+        "f1": 0.26732673267326734,
+        "ap": 0.20461651327407296,
+        "auroc": 0.6500582214867929,
+        "support_positive": 63
+      },
+      "Style Mismatch": {
+        "precision": 0.2408256880733945,
+        "recall": 0.603448275862069,
+        "f1": 0.3442622950819672,
+        "ap": 0.22812154632324388,
+        "auroc": 0.535026405716061,
+        "support_positive": 174
+      },
+      "Over-editing": {
+        "precision": 0.4375,
+        "recall": 0.30434782608695654,
+        "f1": 0.358974358974359,
+        "ap": 0.24783804188883693,
+        "auroc": 0.70619748491513,
+        "support_positive": 69
+      },
+      "Under-editing": {
+        "precision": 0.7849462365591398,
+        "recall": 1.0,
+        "f1": 0.8795180722891566,
+        "ap": 0.844120315024363,
+        "auroc": 0.6129492393808584,
+        "support_positive": 657
+      },
+      "Artifact / Quality Issue": {
+        "precision": 0.21428571428571427,
+        "recall": 0.2727272727272727,
+        "f1": 0.24,
+        "ap": 0.24076937239329296,
+        "auroc": 0.6317825091059293,
+        "support_positive": 33
+      },
+      "Ambiguous Prompt": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "ap": 0.003578783008327052,
+        "auroc": 0.2268020708880924,
+        "support_positive": 3
+      },
+      "Failed Removal": {
+        "precision": 0.3333333333333333,
+        "recall": 0.2,
+        "f1": 0.25,
+        "ap": 0.2164162505085869,
+        "auroc": 0.543959595959596,
+        "support_positive": 15
+      }
+    }
+  },
+  "test": {
+    "loss": 1.6579633122367319,
+    "overall": {
+      "micro_f1": 0.5720263000597728,
+      "macro_f1": 0.2328189276783271,
+      "macro_f1_all": 0.2328189276783271,
+      "macro_f1_supported": 0.2845564671623998,
+      "mAP_micro": 0.5776584676636437,
+      "mAP_macro": 0.24031300185392146,
+      "mAP_macro_all": 0.24031300185392146,
+      "mAP_macro_supported": 0.29371589115479285,
+      "AUROC_macro_all": 0.5198913746785249,
+      "AUROC_macro_supported": 0.6354227912737527
+    },
+    "prediction_diagnostics": {
+      "avg_predicted_positives_per_sample": 2.6359163591635917,
+      "predicted_positive_count_per_class": {
+        "Wrong Object": 6,
+        "Missing Object": 42,
+        "Extra Object": 0,
+        "Wrong Attribute": 652,
+        "Spatial Error": 97,
+        "Style Mismatch": 420,
+        "Over-editing": 48,
+        "Under-editing": 810,
+        "Artifact / Quality Issue": 59,
+        "Ambiguous Prompt": 0,
+        "Failed Removal": 9
+      },
+      "mean_probability_per_class": {
+        "Wrong Object": 0.01311492919921875,
+        "Missing Object": 0.2481689453125,
+        "Extra Object": 2.7000904083251953e-05,
+        "Wrong Attribute": 0.438232421875,
+        "Spatial Error": 0.0797119140625,
+        "Style Mismatch": 0.461181640625,
+        "Over-editing": 0.066162109375,
+        "Under-editing": 0.85986328125,
+        "Artifact / Quality Issue": 0.27099609375,
+        "Ambiguous Prompt": 4.100799560546875e-05,
+        "Failed Removal": 0.073486328125
+      },
+      "max_probability_per_class": {
+        "Wrong Object": 0.85498046875,
+        "Missing Object": 0.998046875,
+        "Extra Object": 0.0009326934814453125,
+        "Wrong Attribute": 0.98388671875,
+        "Spatial Error": 0.9912109375,
+        "Style Mismatch": 0.92236328125,
+        "Over-editing": 0.984375,
+        "Under-editing": 0.99609375,
+        "Artifact / Quality Issue": 0.99853515625,
+        "Ambiguous Prompt": 0.0003077983856201172,
+        "Failed Removal": 0.9990234375
+      }
+    },
+    "by_lang": {
+      "en": {
+        "micro_f1": 0.5727109515260324,
+        "macro_f1": 0.23310125137575521,
+        "macro_f1_all": 0.23310125137575521,
+        "macro_f1_supported": 0.28490152945925634,
+        "mAP_micro": 0.5805631136078734,
+        "mAP_macro": 0.24625616250673368,
+        "mAP_macro_all": 0.24625616250673368,
+        "mAP_macro_supported": 0.30097975417489675,
+        "AUROC_macro_all": 0.5201397682512483,
+        "AUROC_macro_supported": 0.6357263834181924
+      },
+      "hi": {
+        "micro_f1": 0.5716845878136201,
+        "macro_f1": 0.23272049232340938,
+        "macro_f1_all": 0.23272049232340938,
+        "macro_f1_supported": 0.2844361572841671,
+        "mAP_micro": 0.5768790580101735,
+        "mAP_macro": 0.2465032938321537,
+        "mAP_macro_all": 0.2465032938321537,
+        "mAP_macro_supported": 0.3012818035726323,
+        "AUROC_macro_all": 0.5200783906368113,
+        "AUROC_macro_supported": 0.6356513663338804
+      },
+      "bn": {
+        "micro_f1": 0.5716845878136201,
+        "macro_f1": 0.2326443358245,
+        "macro_f1_all": 0.2326443358245,
+        "macro_f1_supported": 0.28434307711883333,
+        "mAP_micro": 0.5769511363562155,
+        "mAP_macro": 0.24612195171509718,
+        "mAP_macro_all": 0.24612195171509718,
+        "mAP_macro_supported": 0.3008157187628966,
+        "AUROC_macro_all": 0.5195875353002452,
+        "AUROC_macro_supported": 0.635051432033633
+      },
+      "overall": {
+        "micro_f1": 0.5720263000597728,
+        "macro_f1": 0.2328189276783271,
+        "macro_f1_all": 0.2328189276783271,
+        "macro_f1_supported": 0.2845564671623998,
+        "mAP_micro": 0.5776584676636437,
+        "mAP_macro": 0.24031300185392146,
+        "mAP_macro_all": 0.24031300185392146,
+        "mAP_macro_supported": 0.29371589115479285,
+        "AUROC_macro_all": 0.5198913746785249,
+        "AUROC_macro_supported": 0.6354227912737527
+      }
+    },
+    "by_lang_debug": {
+      "en": {
+        "eval_rows": 271,
+        "positive_label_count": 401,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 5,
+          "Missing Object": 21,
+          "Extra Object": 0,
+          "Wrong Attribute": 53,
+          "Spatial Error": 20,
+          "Style Mismatch": 57,
+          "Over-editing": 13,
+          "Under-editing": 221,
+          "Artifact / Quality Issue": 7,
+          "Ambiguous Prompt": 0,
+          "Failed Removal": 4
+        }
+      },
+      "hi": {
+        "eval_rows": 271,
+        "positive_label_count": 401,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 5,
+          "Missing Object": 21,
+          "Extra Object": 0,
+          "Wrong Attribute": 53,
+          "Spatial Error": 20,
+          "Style Mismatch": 57,
+          "Over-editing": 13,
+          "Under-editing": 221,
+          "Artifact / Quality Issue": 7,
+          "Ambiguous Prompt": 0,
+          "Failed Removal": 4
+        }
+      },
+      "bn": {
+        "eval_rows": 271,
+        "positive_label_count": 401,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 5,
+          "Missing Object": 21,
+          "Extra Object": 0,
+          "Wrong Attribute": 53,
+          "Spatial Error": 20,
+          "Style Mismatch": 57,
+          "Over-editing": 13,
+          "Under-editing": 221,
+          "Artifact / Quality Issue": 7,
+          "Ambiguous Prompt": 0,
+          "Failed Removal": 4
+        }
+      },
+      "overall": {
+        "eval_rows": 813,
+        "positive_label_count": 1203,
+        "positive_label_counts_by_class": {
+          "Wrong Object": 15,
+          "Missing Object": 63,
+          "Extra Object": 0,
+          "Wrong Attribute": 159,
+          "Spatial Error": 60,
+          "Style Mismatch": 171,
+          "Over-editing": 39,
+          "Under-editing": 663,
+          "Artifact / Quality Issue": 21,
+          "Ambiguous Prompt": 0,
+          "Failed Removal": 12
+        }
+      }
+    },
+    "per_class": {
+      "Wrong Object": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "ap": 0.16693337120127982,
+        "auroc": 0.7333751044277361,
+        "support_positive": 15
+      },
+      "Missing Object": {
+        "precision": 0.21428571428571427,
+        "recall": 0.14285714285714285,
+        "f1": 0.17142857142857143,
+        "ap": 0.2010625408189586,
+        "auroc": 0.5544338624338624,
+        "support_positive": 63
+      },
+      "Extra Object": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "ap": 0.0,
+        "auroc": 0.0,
+        "support_positive": 0
+      },
+      "Wrong Attribute": {
+        "precision": 0.2254601226993865,
+        "recall": 0.9245283018867925,
+        "f1": 0.3625154130702836,
+        "ap": 0.3184818717582799,
+        "auroc": 0.6617092685553825,
+        "support_positive": 159
+      },
+      "Spatial Error": {
+        "precision": 0.09278350515463918,
+        "recall": 0.15,
+        "f1": 0.11464968152866242,
+        "ap": 0.21417333461852933,
+        "auroc": 0.6304891544931386,
+        "support_positive": 60
+      },
+      "Style Mismatch": {
+        "precision": 0.2642857142857143,
+        "recall": 0.6491228070175439,
+        "f1": 0.3756345177664975,
+        "ap": 0.3035077551065907,
+        "auroc": 0.6322666739538358,
+        "support_positive": 171
+      },
+      "Over-editing": {
+        "precision": 0.25,
+        "recall": 0.3076923076923077,
+        "f1": 0.27586206896551724,
+        "ap": 0.2431193832535225,
+        "auroc": 0.7509110183528789,
+        "support_positive": 39
+      },
+      "Under-editing": {
+        "precision": 0.8185185185185185,
+        "recall": 1.0,
+        "f1": 0.90020366598778,
+        "ap": 0.8806581545087164,
+        "auroc": 0.6519255907491202,
+        "support_positive": 663
+      },
+      "Artifact / Quality Issue": {
+        "precision": 0.05084745762711865,
+        "recall": 0.14285714285714285,
+        "f1": 0.075,
+        "ap": 0.05456534680670174,
+        "auroc": 0.6249699374699376,
+        "support_positive": 21
+      },
+      "Ambiguous Prompt": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "ap": 0.0,
+        "auroc": 0.0,
+        "support_positive": 0
+      },
+      "Failed Removal": {
+        "precision": 0.3333333333333333,
+        "recall": 0.25,
+        "f1": 0.2857142857142857,
+        "ap": 0.2609412623205568,
+        "auroc": 0.4787245110278819,
+        "support_positive": 12
+      }
+    }
+  }
+}
