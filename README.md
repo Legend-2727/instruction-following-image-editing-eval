@@ -91,7 +91,8 @@ This avoids leakage across language variants and matches the training/evaluation
   - `scripts/evaluate_evidence_grounded_benchmark.py`
   - `scripts/run_demo_inference_evidence_grounded.py`
 - Organized evidence-grounded report bundles for `v1`, `v2`, and `v3`
-- Release placeholder for the final public model bundle: `evidence_grounded_taxonomy_eval_v3`
+- Final public model bundle: `evidence_grounded_taxonomy_eval_v3`
+- Preferred model host: `https://huggingface.co/Legend2727/evidence_grounded_taxonomy_eval_v3`
 
 ## Primary Operational Path
 
@@ -256,8 +257,8 @@ Current release status:
 
 - release-designated model: `evidence_grounded_taxonomy_eval_v3`
 - local release bundle prepared under `models/released/evidence_grounded_taxonomy_eval_v3/`
-- Hugging Face upload not executed from this environment because no Hub token was available
-- manual publication steps are documented in `docs/model_download_and_usage.md`
+- published model host: `https://huggingface.co/Legend2727/evidence_grounded_taxonomy_eval_v3`
+- local bundle remains the canonical upload source for future release refreshes
 
 Tracked in git:
 

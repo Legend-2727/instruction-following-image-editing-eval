@@ -41,7 +41,7 @@ Current cleanup status:
 
 - the local release bundle has been prepared under `models/released/evidence_grounded_taxonomy_eval_v3/`
 - the local `best_model.pt` was found in the older root import folder and copied into the release directory
-- Hugging Face upload was not executed from the cleanup environment because no local Hub token was available
+- published Hugging Face model repo: `https://huggingface.co/Legend2727/evidence_grounded_taxonomy_eval_v3`
 
 ## What Is Tracked In Git
 
@@ -64,8 +64,9 @@ If you have the final `v3` weight locally:
 
 1. Place it at `models/released/evidence_grounded_taxonomy_eval_v3/best_model.pt`.
 2. Keep it untracked.
-3. Prefer publishing the prepared release directory to a Hugging Face model repo.
-4. If Hugging Face publication is not available, use an external artifact host or a GitHub Release asset instead.
+3. Use `https://huggingface.co/Legend2727/evidence_grounded_taxonomy_eval_v3` as the canonical model host for this release.
+4. Prefer publishing refreshed bundles to the same Hugging Face repo rather than adding large weights to git history.
+5. If Hugging Face publication is not available, use an external artifact host or a GitHub Release asset instead.
 
 If you do not have the weight locally:
 

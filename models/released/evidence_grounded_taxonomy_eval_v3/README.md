@@ -7,7 +7,7 @@ Release status:
 - release-designated model: yes
 - tracked large weights in git: no
 - preferred external host: Hugging Face model repo
-- current cleanup status: local bundle prepared, manual upload still required
+- published host: `https://huggingface.co/Legend2727/evidence_grounded_taxonomy_eval_v3`
 
 ## Local Bundle Contents
 
@@ -41,16 +41,17 @@ python scripts/infer_evidence_grounded_taxonomy.py \
   --lang en
 ```
 
-## Manual Hugging Face Publication
+## Hugging Face Publication
 
-The cleanup environment had Hugging Face CLI available but no local Hub token, so upload was not executed automatically.
+This bundle has been published to:
 
-Typical maintainer workflow:
+- `https://huggingface.co/Legend2727/evidence_grounded_taxonomy_eval_v3`
+
+Refresh workflow:
 
 ```bash
 huggingface-cli login
-huggingface-cli repo create <namespace>/evidence_grounded_taxonomy_eval_v3 --exist-ok
-huggingface-cli upload-large-folder <namespace>/evidence_grounded_taxonomy_eval_v3 models/released/evidence_grounded_taxonomy_eval_v3 --repo-type model
+huggingface-cli upload-large-folder Legend2727/evidence_grounded_taxonomy_eval_v3 models/released/evidence_grounded_taxonomy_eval_v3 --repo-type model
 ```
 
 ## Related Report Bundle

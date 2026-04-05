@@ -10,7 +10,11 @@ This cleanup prepared a local release bundle under:
 
 - `models/released/evidence_grounded_taxonomy_eval_v3/`
 
-The bundle is ready for manual external publication, but it was not uploaded from this environment because no local Hugging Face token was available.
+Published model host:
+
+- `https://huggingface.co/Legend2727/evidence_grounded_taxonomy_eval_v3`
+
+The local release bundle remains the source for future refresh uploads.
 
 ## Local Bundle Contents
 
@@ -46,24 +50,23 @@ python scripts/infer_evidence_grounded_taxonomy.py \
 
 The recovered evidence-grounded path is EN / HI / BN only and emits taxonomy predictions.
 
-## Manual Hugging Face Publication
+## Hugging Face Publication
 
-Preferred host:
+Canonical host:
 
-- Hugging Face model repo
+- `https://huggingface.co/Legend2727/evidence_grounded_taxonomy_eval_v3`
 
-Typical maintainer workflow:
+Refresh workflow for maintainers:
 
 ```bash
 huggingface-cli login
-huggingface-cli repo create <namespace>/evidence_grounded_taxonomy_eval_v3 --exist-ok
-huggingface-cli upload-large-folder <namespace>/evidence_grounded_taxonomy_eval_v3 models/released/evidence_grounded_taxonomy_eval_v3 --repo-type model
+huggingface-cli upload-large-folder Legend2727/evidence_grounded_taxonomy_eval_v3 models/released/evidence_grounded_taxonomy_eval_v3 --repo-type model
 ```
 
 Notes:
 
 - `huggingface-cli` is available in the cleanup environment.
-- automatic upload was not attempted because no local Hub token was configured.
+- this repo was published successfully to the canonical host above.
 - the prepared bundle is self-contained for upload: weight, thresholds, label map, metrics, and release README live in the same directory.
 
 ## GitHub Release Fallback
