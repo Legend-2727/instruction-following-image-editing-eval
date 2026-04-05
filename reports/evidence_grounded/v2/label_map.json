@@ -1,0 +1,13 @@
+{
+  "0": "Wrong Object",
+  "1": "Missing Object",
+  "2": "Extra Object",
+  "3": "Wrong Attribute",
+  "4": "Spatial Error",
+  "5": "Style Mismatch",
+  "6": "Over-editing",
+  "7": "Under-editing",
+  "8": "Artifact / Quality Issue",
+  "9": "Ambiguous Prompt",
+  "10": "Failed Removal"
+}

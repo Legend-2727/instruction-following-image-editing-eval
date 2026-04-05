@@ -1,0 +1,13 @@
+{
+  "Wrong Object": 0.7,
+  "Missing Object": 0.85,
+  "Extra Object": 0.65,
+  "Wrong Attribute": 0.55,
+  "Spatial Error": 0.7,
+  "Style Mismatch": 0.15,
+  "Over-editing": 0.15,
+  "Under-editing": 0.2,
+  "Artifact / Quality Issue": 0.7,
+  "Ambiguous Prompt": 0.7,
+  "Failed Removal": 0.85
+}

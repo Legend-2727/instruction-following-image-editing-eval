@@ -30,6 +30,20 @@ runs/
 artifacts/
 data/hf_snapshots/
 data/splits/*.db
+checkpoints/
 
-# Save versioned checkpoints in a non-ignored folder such as checkpoints/
-# so they can be tracked with Git LFS patterns from .gitattributes.
+# Local model/import caches
+/__huggingface_repos__.json
+/evidence_grounded_taxonomy_eval/
+/evidence_grounded_taxonomy_eval_v2/
+/evidence_grounded_taxonomy_eval_v3/
+models/released/**/*.pt
+models/released/**/*.pth
+models/released/**/*.bin
+models/released/**/*.safetensors
+experiments/history/**/*.pt
+experiments/history/**/*.pth
+experiments/history/**/*.bin
+experiments/history/**/*.safetensors
+
+# Large model binaries are intentionally kept out of normal git history.

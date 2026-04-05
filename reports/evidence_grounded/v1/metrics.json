@@ -1,0 +1,42 @@
+{
+  "primary_eval_mode": "taxonomy_positive",
+  "val_best_macro_f1_supported": 0.48651362994152964,
+  "test_benchmark": {
+    "micro_f1": 0.6557377049180327,
+    "macro_f1": 0.2799068771476497,
+    "macro_f1_supported": 0.342108405402683,
+    "mAP_micro": 0.5516155810541823,
+    "mAP_macro_supported": 0.33014485171048746
+  },
+  "test_full": {
+    "micro_f1": 0.4326035346874176,
+    "macro_f1": 0.19123321742686858,
+    "macro_f1_supported": 0.2337294879661727,
+    "mAP_micro": 0.3207518262213247,
+    "mAP_macro_supported": 0.21551785634072415
+  },
+  "best_thresholds": {
+    "Wrong Object": 0.7,
+    "Missing Object": 0.85,
+    "Extra Object": 0.65,
+    "Wrong Attribute": 0.55,
+    "Spatial Error": 0.7,
+    "Style Mismatch": 0.15,
+    "Over-editing": 0.15,
+    "Under-editing": 0.2,
+    "Artifact / Quality Issue": 0.7,
+    "Ambiguous Prompt": 0.7,
+    "Failed Removal": 0.85
+  },
+  "config": {
+    "vision_model_id": "google/vit-base-patch16-224-in21k",
+    "text_model_id": "xlm-roberta-base",
+    "hidden_dim": 256,
+    "train_neg_ratio": 0.35,
+    "batch_size": 8,
+    "epochs": 8,
+    "aux_op_loss_weight": 0.2,
+    "unfreeze_text_layers": 2,
+    "unfreeze_vision_layers": 2
+  }
+}

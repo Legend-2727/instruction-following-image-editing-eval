@@ -1,0 +1,16 @@
+{
+  "train_originals": 4976,
+  "val_originals": 621,
+  "test_originals": 597,
+  "train_rows": 9768,
+  "val_rows_full": 1863,
+  "test_rows_full": 1791,
+  "val_rows_benchmark": 912,
+  "test_rows_benchmark": 813,
+  "languages": [
+    "en",
+    "hi",
+    "bn"
+  ],
+  "train_neg_ratio": 0.35
+}

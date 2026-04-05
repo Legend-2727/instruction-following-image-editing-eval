@@ -1,0 +1,92 @@
+{
+  "version_name": "evidence_grounded_taxonomy_eval_v1",
+  "display_version": "v1",
+  "purpose": "First evidence-grounded multilingual taxonomy evaluator artifact bundle preserved as experiment history.",
+  "release_role": "history",
+  "supported_languages": [
+    "en",
+    "hi",
+    "bn"
+  ],
+  "task": {
+    "inputs": [
+      "source_image",
+      "edited_image",
+      "instruction"
+    ],
+    "outputs": [
+      "11-label taxonomy"
+    ],
+    "inference_mode": "single-prompt multilingual inference"
+  },
+  "primary_metrics": {
+    "val_best_macro_f1_supported": 0.48651362994152964,
+    "test_benchmark": {
+      "micro_f1": 0.6557377049180327,
+      "macro_f1": 0.2799068771476497,
+      "macro_f1_supported": 0.342108405402683,
+      "mAP_micro": 0.5516155810541823,
+      "mAP_macro_supported": 0.33014485171048746
+    },
+    "test_full": {
+      "micro_f1": 0.4326035346874176,
+      "macro_f1": 0.19123321742686858,
+      "macro_f1_supported": 0.2337294879661727,
+      "mAP_micro": 0.3207518262213247,
+      "mAP_macro_supported": 0.21551785634072415
+    }
+  },
+  "dataset_eval_summary": {
+    "train_originals": 4976,
+    "val_originals": 621,
+    "test_originals": 597,
+    "train_rows": 9768,
+    "val_rows_full": 1863,
+    "test_rows_full": 1791,
+    "val_rows_benchmark": 912,
+    "test_rows_benchmark": 813,
+    "languages": [
+      "en",
+      "hi",
+      "bn"
+    ],
+    "train_neg_ratio": 0.35
+  },
+  "thresholds": {
+    "source_file": "best_thresholds.json",
+    "format": "mapping",
+    "label_order": [
+      "Wrong Object",
+      "Missing Object",
+      "Extra Object",
+      "Wrong Attribute",
+      "Spatial Error",
+      "Style Mismatch",
+      "Over-editing",
+      "Under-editing",
+      "Artifact / Quality Issue",
+      "Ambiguous Prompt",
+      "Failed Removal"
+    ]
+  },
+  "files": {
+    "metrics.json": "Original recovered metric summary for v1.",
+    "label_map.json": "Original index-to-label mapping bundled with v1.",
+    "best_thresholds.json": "Original labeled threshold mapping for v1.",
+    "dataset_summary.json": "Recovered dataset/eval summary for this artifact family.",
+    "per_class_test_benchmark.csv": "Per-class benchmark metrics.",
+    "train_history.json": "Recovered epoch-level training history."
+  },
+  "local_source_import_folder": "../../../evidence_grounded_taxonomy_eval",
+  "weights": {
+    "included_in_git": false,
+    "hosted_externally": false,
+    "expected_local_path": "../../../experiments/history/evidence_grounded_taxonomy_eval_v1/best_model.pt",
+    "present_in_local_workspace_during_migration": true
+  },
+  "notes": [
+    "This version is retained for history and comparison only.",
+    "The lineage notebook has been imported into the repo and the recovered wrapper scripts now cover the v1 training path, but a fresh full retraining run has not been re-verified in this cleaned repo.",
+    "Additional local-only files such as raw prediction exports and evidence CSVs remain in the ignored root import folder when present."
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "version_name": "evidence_grounded_taxonomy_eval_v2",
+  "display_version": "v2",
+  "purpose": "Second evidence-grounded multilingual taxonomy evaluator artifact bundle preserved as experiment history.",
+  "release_role": "history",
+  "supported_languages": [
+    "en",
+    "hi",
+    "bn"
+  ],
+  "task": {
+    "inputs": [
+      "source_image",
+      "edited_image",
+      "instruction"
+    ],
+    "outputs": [
+      "11-label taxonomy"
+    ],
+    "inference_mode": "single-prompt multilingual inference"
+  },
+  "primary_metrics": {
+    "best_val_macro_f1_supported": 0.491743421227371,
+    "benchmark": {
+      "micro_f1": 0.6652360515021459,
+      "macro_f1": 0.2917131281628865,
+      "macro_f1_supported": 0.3565382677546391,
+      "mAP_micro": 0.6330954537184633,
+      "mAP_macro_supported": 0.35859051575211676
+    },
+    "full_test": {
+      "micro_f1": 0.4658851818455065,
+      "macro_f1": 0.21815709140303177,
+      "macro_f1_supported": 0.26663644504815,
+      "mAP_micro": 0.4055643431598923,
+      "mAP_macro_supported": 0.2368823812243237
+    }
+  },
+  "dataset_eval_summary": {
+    "summary_status": "partial",
+    "note": "The original v2 folder did not ship a standalone dataset_summary.json. The lineage notebook has now been imported and the v2 fine-tuning path has been recovered into scripts, but a fresh full rerun is still pending."
+  },
+  "thresholds": {
+    "source_file": "best_thresholds.json",
+    "format": "array",
+    "label_order": [
+      "Wrong Object",
+      "Missing Object",
+      "Extra Object",
+      "Wrong Attribute",
+      "Spatial Error",
+      "Style Mismatch",
+      "Over-editing",
+      "Under-editing",
+      "Artifact / Quality Issue",
+      "Ambiguous Prompt",
+      "Failed Removal"
+    ],
+    "derived_labeled_file": "best_thresholds_by_label.json"
+  },
+  "files": {
+    "metrics.json": "Original recovered metric summary for v2.",
+    "best_thresholds.json": "Original threshold array recovered from the local v2 folder.",
+    "best_thresholds_by_label.json": "Derived convenience mapping created during repo cleanup using the canonical taxonomy order.",
+    "label_map.json": "Derived index-to-label mapping created during repo cleanup using the canonical taxonomy order.",
+    "per_class_test_benchmark.csv": "Per-class benchmark metrics.",
+    "train_history_v2.json": "Recovered epoch-level training history."
+  },
+  "local_source_import_folder": "../../../evidence_grounded_taxonomy_eval_v2",
+  "weights": {
+    "included_in_git": false,
+    "hosted_externally": false,
+    "expected_local_path": "../../../experiments/history/evidence_grounded_taxonomy_eval_v2/best_model.pt",
+    "present_in_local_workspace_during_migration": true
+  },
+  "notes": [
+    "This version is retained for history and comparison only.",
+    "label_map.json and best_thresholds_by_label.json were derived from the canonical taxonomy ordering already present in scripts/utils/schema.py.",
+    "Additional local-only files such as raw prediction exports remain in the ignored root import folder when present."
+  ]
+}

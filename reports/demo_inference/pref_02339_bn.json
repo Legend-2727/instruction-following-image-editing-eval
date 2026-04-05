@@ -1,0 +1,40 @@
+{
+  "id": "pref_02339",
+  "lang": "bn",
+  "instruction": "ছবিটিকে উজ্জ্বল, পরিষ্কার পানির নিচের অবস্থার মতো করে তুলুন যেন এটি একটি রৌদ্রোজ্জ্বল দিন, সামগ্রিক উজ্জ্বলতা বৃদ্ধি করে, জেলিফিশের বিবরণগুলোকে আরও তীক্ষ্ণ করে এবং প্রাণবন্ত নীল পানির মধ্য দিয়ে আসা সূক্ষ্ম, উষ্ণ আলোর রশ্মি বা কস্টিকস যোগ করুন।",
+  "source_path": "images/source/shard_00/pref_02339.png",
+  "target_path": "images/target/shard_00/pref_02339.png",
+  "gold_labels": [
+    "Under-editing"
+  ],
+  "pred_labels": [
+    "Under-editing"
+  ],
+  "probabilities": {
+    "Wrong Object": 1.3709068298339844e-06,
+    "Missing Object": 7.450580596923828e-06,
+    "Extra Object": 7.569789886474609e-06,
+    "Wrong Attribute": 0.0009927749633789062,
+    "Spatial Error": 1.7881393432617188e-07,
+    "Style Mismatch": 0.00047850608825683594,
+    "Over-editing": 3.5762786865234375e-07,
+    "Under-editing": 0.990234375,
+    "Artifact / Quality Issue": 6.616115570068359e-06,
+    "Ambiguous Prompt": 1.430511474609375e-06,
+    "Failed Removal": 5.960464477539063e-08
+  },
+  "thresholds": {
+    "Wrong Object": 0.1,
+    "Missing Object": 0.7500000000000002,
+    "Extra Object": 0.40000000000000013,
+    "Wrong Attribute": 0.45000000000000007,
+    "Spatial Error": 0.45000000000000007,
+    "Style Mismatch": 0.1,
+    "Over-editing": 0.9000000000000002,
+    "Under-editing": 0.1,
+    "Artifact / Quality Issue": 0.45000000000000007,
+    "Ambiguous Prompt": 0.45000000000000007,
+    "Failed Removal": 0.1
+  },
+  "demo_mode": "artifact_replay"
+}

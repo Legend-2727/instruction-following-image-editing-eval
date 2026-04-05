@@ -1,0 +1,40 @@
+{
+  "id": "pref_02339",
+  "lang": "en",
+  "instruction": "Enhance the image to simulate bright, clear underwater conditions as if on a sunny day, by increasing overall luminosity, sharpening the details of the jellyfish, and introducing subtle, warm light rays or caustics filtering through the vibrant blue water.",
+  "source_path": "images/source/shard_00/pref_02339.png",
+  "target_path": "images/target/shard_00/pref_02339.png",
+  "gold_labels": [
+    "Under-editing"
+  ],
+  "pred_labels": [
+    "Under-editing"
+  ],
+  "probabilities": {
+    "Wrong Object": 1.3113021850585938e-06,
+    "Missing Object": 4.172325134277344e-06,
+    "Extra Object": 5.304813385009766e-06,
+    "Wrong Attribute": 0.000583648681640625,
+    "Spatial Error": 1.1920928955078125e-07,
+    "Style Mismatch": 0.00037407875061035156,
+    "Over-editing": 3.5762786865234375e-07,
+    "Under-editing": 0.99560546875,
+    "Artifact / Quality Issue": 7.152557373046875e-06,
+    "Ambiguous Prompt": 2.384185791015625e-07,
+    "Failed Removal": 0.0
+  },
+  "thresholds": {
+    "Wrong Object": 0.1,
+    "Missing Object": 0.7500000000000002,
+    "Extra Object": 0.40000000000000013,
+    "Wrong Attribute": 0.45000000000000007,
+    "Spatial Error": 0.45000000000000007,
+    "Style Mismatch": 0.1,
+    "Over-editing": 0.9000000000000002,
+    "Under-editing": 0.1,
+    "Artifact / Quality Issue": 0.45000000000000007,
+    "Ambiguous Prompt": 0.45000000000000007,
+    "Failed Removal": 0.1
+  },
+  "demo_mode": "artifact_replay"
+}
