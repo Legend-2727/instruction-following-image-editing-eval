@@ -35,6 +35,38 @@ Before any history rewrite:
 3. expect all collaborators to re-clone after the rewrite
 4. do not run these commands from your normal working clone
 
+## Preflight Checklist
+
+Do not proceed past preflight unless every item below is true:
+
+- GitHub is reachable from the current environment
+- `git lfs version` works
+- `git filter-repo --version` works
+- you can authenticate to the GitHub remote used by `origin`
+- you can create and destroy a disposable mirror clone outside the normal working repo
+- you have confirmed that the current working tree is clean and pushed
+- maintainers understand that the final push will be `--force --mirror`
+- maintainers have separately confirmed that the Hugging Face model repo is out of scope for this operation
+
+Useful preflight checks:
+
+```bash
+git remote -v
+git ls-remote origin
+git lfs version
+git filter-repo --version
+git lfs ls-files
+```
+
+Non-destructive history checks you can run before the rewrite:
+
+```bash
+git rev-list --all -- checkpoints/stage2_taxonomy
+git rev-list --all -- checkpoints/stage2_taxonomy_only_heavy
+git rev-list --all -- runs/stage1_binary_multilingual
+git log --all --name-only -- '*.pt' '*.pth' '*.bin' '*.safetensors'
+```
+
 ## Example Mirror-Clone Workflow
 
 Create a disposable mirror clone:
@@ -89,6 +121,26 @@ Expect follow-up maintainer work:
 - verify that GitHub LFS billing/storage drops after old refs are gone
 
 If GitHub continues to report old LFS storage after the rewrite and remote refs are gone, maintainers may need to open a GitHub support ticket for server-side cleanup.
+
+## Post-Cleanup Validation Checklist
+
+After the force-push, verify all of the following:
+
+- collaborators have been told to re-clone
+- `git lfs ls-files` is empty in a fresh clone unless new LFS usage was intentionally introduced later
+- stale history paths no longer appear in history lookups
+- the current branch still contains the cleaned docs, scripts, reports, and release metadata
+- the local-only `best_model.pt` is still not tracked in git
+- GitHub Releases and the Hugging Face model page still point to the intended `v3` bundle
+
+Suggested validation commands in a fresh clone:
+
+```bash
+git lfs ls-files
+git log --all --name-only -- '*.pt' '*.pth' '*.bin' '*.safetensors'
+git log --all --name-only -- 'checkpoints/stage2_taxonomy' 'checkpoints/stage2_taxonomy_only_heavy' 'runs/stage1_binary_multilingual'
+git status --short --branch
+```
 
 ## Recommendation
 
