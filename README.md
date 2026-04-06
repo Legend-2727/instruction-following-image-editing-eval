@@ -70,6 +70,32 @@ The public branch uses original-level splitting first and language expansion sec
 
 This avoids leakage across language variants and matches the training/evaluation utilities already present in the repo.
 
+## Local Dataset Root
+
+The repository does not ship dataset contents in GitHub.
+
+Supported local-only dataset root:
+
+- `data/published/`
+
+Policy:
+
+- `data/published/` is ignored by git
+- dataset contents under it are for local loading only
+- scripts may read from it when you point them there explicitly
+- do not commit dataset contents from that directory
+
+Dataset validation utility:
+
+- `scripts/validate_xlingual_dataset.py`
+
+Example:
+
+```bash
+python scripts/validate_xlingual_dataset.py \
+  --jsonl data/final/final_taxonomy_originals.jsonl
+```
+
 ## What Is Included
 
 - Checkpoint 1 lightweight baseline code:
@@ -79,6 +105,8 @@ This avoids leakage across language variants and matches the training/evaluation
   - logistic-regression baseline trainer
   - failure analysis
 - Multilingual dataset-building and split utilities for the later branch
+- Dataset validator for the cleaned EN / HI / BN taxonomy rows:
+  - `scripts/validate_xlingual_dataset.py`
 - Human review queue and merge tooling for auditable label correction
 - Open-VLM benchmarking utilities and prompt files from the later workflow
 - Recovered evidence-grounded notebook source:

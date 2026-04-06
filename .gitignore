@@ -29,6 +29,7 @@ logs/
 runs/
 artifacts/
 data/hf_snapshots/
+data/published/
 data/splits/*.db
 checkpoints/
 
